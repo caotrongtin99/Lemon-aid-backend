@@ -10,10 +10,14 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Follower.belongsTo(models.User,{
-      //   as : 'users',
-      //   foreignKey:'userId'
-      // });
+      Follower.belongsTo(models.User,{
+        as : 'users',
+        foreignKey:'userId'
+      });
+      Follower.belongsTo(models.User,{
+        as : 'users1',
+        foreignKey:'followerId'
+      });
     }
   };
   Follower.init({
@@ -25,12 +29,18 @@ module.exports = (sequelize, DataTypes) => {
     relation: DataTypes.STRING,
     userId : {
       type : DataTypes.UUID,
-      // references : {
-      //   model : 'users',
-      //   key :'id'
-      // }
+      references : {
+         model : 'Users',
+         key :'id'
+       }
     },
-    followerId : DataTypes.UUID
+    followerId : {
+      type : DataTypes.UUID,
+      references : {
+         model : 'Users',
+         key :'id'
+       }
+    },
   }, {
     sequelize,
     modelName: 'Follower',

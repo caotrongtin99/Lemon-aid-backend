@@ -8,7 +8,7 @@ module.exports = {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
-        defaultValue: DataTypes.UUIDV4,
+        defaultValue: DataTypes.UUID,
       }
   ,
       username: {
@@ -17,20 +17,20 @@ module.exports = {
       password: {
         type: Sequelize.STRING
       },
-      name: {
+      avatar: {
         type: Sequelize.STRING
       },
       token: {
         type: Sequelize.STRING
       },
       email:{
-        type : DataTypes.STRING
+        type : Sequelize.STRING
       },
       following_ids: {
-        type : DataTypes.ARRAY(DataTypes.UUID)
+        type : Sequelize.ARRAY(DataTypes.UUID)
       },
       follower_ids: {
-        type : DataTypes.ARRAY(DataTypes.UUID)
+        type : Sequelize.ARRAY(DataTypes.UUID)
       },
       createdAt: {
         allowNull: false,

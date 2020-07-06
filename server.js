@@ -13,8 +13,8 @@ app.use(bodyParser.json())
 
 //Config route 
 app.use("/api",require('./routes/auth.route'));
-// app.use("/api",require('./routes/user.route'));
-// app.use("/api",require('./routes/post.route'));
+app.use("/api/user",require('./routes/user.route'));
+app.use("/api",require('./routes/post.route'));
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

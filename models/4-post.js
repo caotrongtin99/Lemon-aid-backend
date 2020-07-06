@@ -16,12 +16,21 @@ module.exports = (sequelize, DataTypes) => {
       Post.hasMany(models.Comment,{
         foreignKey: 'postId'
       })
+      Post.hasMany(models.PostIngredient,{
+        as: 'postingredients',
+        foreignKey: 'postId'
+      })
+      Post.hasMany(models.PostCategory,{
+        as: 'postcategories',
+        foreignKey: 'postId'
+      })
     }
   };
   Post.init({
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
     url: DataTypes.STRING,
+    avatar: DataTypes.STRING,
     content: DataTypes.STRING,
     ingredientIds : DataTypes.ARRAY(DataTypes.UUID),
     categoryIds :  DataTypes.ARRAY(DataTypes.UUID),
