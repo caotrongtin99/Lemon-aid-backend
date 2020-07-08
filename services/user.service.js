@@ -16,10 +16,6 @@ exports.getFollowersOfUserByUserId = (userId) =>{
     include:[
       {
         model : models.User,
-        as : 'users'
-      },
-      {
-        model : models.User,
         as : 'users1'
       }
     ]
