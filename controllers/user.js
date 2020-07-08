@@ -1,4 +1,4 @@
-const {getUserByUsername}= require('../services/user.service')
+const {getUserByUsername, getFollowersOfUserByUserId}= require('../services/user.service')
 const {getPostsByUserId} = require('../services/post.service')
 exports.getInfoUser = (req,res) =>{
   const username = req.params.username;
@@ -8,12 +8,17 @@ exports.getInfoUser = (req,res) =>{
         const userId = user.id;
         getPostsByUserId(userId)
           .then(posts=>{
-            console.log(posts);
-            res.status(200).json({
-              user,
-              posts : posts
+            getFollowersOfUserByUserId(userId)
+            .then(followers=>{
+              res.status(200).json({
+                user,
+                posts : posts,
+                followers
+              })
             })
           })
-      }
+        }
+
+
     })
 }
