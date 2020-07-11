@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey : 'parentCommentId'
       })
       Comment.hasMany(models.Comment,{
-        as : 'SubComments',
+        as : 'SubComment',
         foreignKey:'parentCommentId'
       })
     }

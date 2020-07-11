@@ -2,9 +2,36 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const {getInfoUser} = require('../controllers/user')
+const {getInfoUser, follow,unfollow,likePost,unlikePost, getFavoritePosts, createComment,deleteComment, getActivityHistory} = require('../controllers/user');
 router.get("/:username", getInfoUser);
-
+router.post("/follow",follow);
+router.post("/unfollow",unfollow);
+router.post("/likePost",likePost);
+router.post("/unlikePost",unlikePost);
+router.get('/favoriteposts/:userId',getFavoritePosts);
+router.post('/comment',createComment);
+router.post('/deletecomment',deleteComment);
+router.get('/getactivityhistory/:userId',getActivityHistory);
+router.post('/upload', (req, res) => {
+  upload(req, res, (err) => {
+     if(err){
+        res.status(400).json({
+           msg: err
+        })
+     }else{
+        if(req.file == undefined){
+           res.status(400).json({
+              msg: 'Error: No file selected'
+           });
+        }else{
+           res.status(200).json({
+              msg: ':>) File  Uploaded',
+              file: `uploads/${req.file.filename}`
+           });
+        }
+     }
+  });
+})
 const storage = multer.diskStorage({
   destination: './public/uploads/',
   filename: function(req, file, cb){
@@ -41,28 +68,5 @@ function checkFileType(file, cb){
      cb('Error: Images only!!')
   }
 }
-
-// Upload Single File
-router.post('/upload', (req, res) => {
-  upload(req, res, (err) => {
-     if(err){
-        res.status(400).json({
-           msg: err
-        })
-     }else{
-        if(req.file == undefined){
-           res.status(400).json({
-              msg: 'Error: No file selected'
-           });
-        }else{
-           res.status(200).json({
-              msg: ':>) File  Uploaded',
-              file: `uploads/${req.file.filename}`
-           });
-        }
-     }
-  });
-})
-
 
 module.exports = router;

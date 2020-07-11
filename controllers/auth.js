@@ -51,7 +51,6 @@ exports.signup = (req,res) =>{
 }
 
 exports.signin= (req,res) =>{
-  console.log("hello")
   const {username,password} = req.body;
 
   getUserByUsername(username)

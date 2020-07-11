@@ -17,11 +17,15 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'postId'
       })
       Post.hasMany(models.PostIngredient,{
-        as: 'postingredients',
+        as: 'postingredient',
         foreignKey: 'postId'
       })
       Post.hasMany(models.PostCategory,{
-        as: 'postcategories',
+        as: 'postcategory',
+        foreignKey: 'postId'
+      })
+      Post.hasMany(models.PostLike,{
+        as: 'postlike',
         foreignKey: 'postId'
       })
     }
@@ -32,8 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     url: DataTypes.STRING,
     avatar: DataTypes.STRING,
     content: DataTypes.STRING,
-    ingredientIds : DataTypes.ARRAY(DataTypes.UUID),
-    categoryIds :  DataTypes.ARRAY(DataTypes.UUID),
+    tag: DataTypes.STRING,
+    ingredients : DataTypes.STRING,
+    categories: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',

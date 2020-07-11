@@ -11,12 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       User.hasMany(models.Follower, {
-        as : 'followers',
+        as : 'user',
         foreignKey : 'userId'
       });
 
       User.hasMany(models.Follower, {
-        as : 'followers1',
+        as : 'follower',
         foreignKey : 'userId'
       });
 
@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId'
       })
       User.hasMany(models.Comment,{
+        foreignKey: 'userId'
+      })
+      User.hasMany(models.PostLike,{
+        as: 'postlike',
         foreignKey: 'userId'
       })
     }
@@ -40,8 +44,6 @@ module.exports = (sequelize, DataTypes) => {
     avatar: DataTypes.STRING,
     email: DataTypes.STRING,
     token: DataTypes.STRING,
-    followingIds: DataTypes.ARRAY(DataTypes.UUID) ,
-    followerIds: DataTypes.ARRAY(DataTypes.UUID) ,
   }, {
     sequelize,
     modelName: 'User',
