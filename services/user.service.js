@@ -39,6 +39,23 @@ exports.getUserByUsername = (username)=>{
   })
 };
 
+
+exports.getUserById = (id)=>{
+  return new Promise((resolve,reject)=>{
+    let options = {
+      attribute: ['id','username','avatar','email','name'],
+      where: {
+        id : id
+      }
+    }
+    models.User
+      .findOne(options)
+      .then(data=>{console.log(data);resolve(data)})
+      .catch(err => reject(Error(err)))
+  })
+};
+
+
 exports.comparePassword = (password, hash) =>{
   return bcrypt.compareSync(password,hash)
   

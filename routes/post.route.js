@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const {getAllPosts,createPost,updatePost,removePost, getPostById} = require('../controllers/post')
+const {getAllPosts,createPost,updatePost,removePost, getPostById} = require('../controllers/post');
+const requireLogin = require('../middlewares/requireLogin');
 router.get("/post", getAllPosts);
 router.get("/post/getpost/:postid",getPostById);
-router.post("/post/create",createPost);
-router.post("/post/update",updatePost);
-router.post("/post/remove",removePost);
+router.post("/post/create",requireLogin,createPost);
+router.post("/post/update",requireLogin,updatePost);
+router.post("/post/remove",requireLogin,removePost);
 module.exports = router;

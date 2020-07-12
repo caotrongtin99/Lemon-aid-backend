@@ -3,14 +3,15 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const {getInfoUser, follow,unfollow,likePost,unlikePost, getFavoritePosts, createComment,deleteComment, getActivityHistory} = require('../controllers/user');
+const requireLogin = require('../middlewares/requireLogin');
 router.get("/:username", getInfoUser);
-router.post("/follow",follow);
-router.post("/unfollow",unfollow);
-router.post("/likePost",likePost);
-router.post("/unlikePost",unlikePost);
-router.get('/favoriteposts/:userId',getFavoritePosts);
-router.post('/comment',createComment);
-router.post('/deletecomment',deleteComment);
+router.post("/follow",requireLogin,follow);
+router.post("/unfollow",requireLogin,unfollow);
+router.post("/likePost",requireLogin,likePost);
+router.post("/unlikePost",requireLogin,unlikePost);
+router.get('/favoriteposts/:userId',requireLogin,getFavoritePosts);
+router.post('/comment',requireLogin,createComment);
+router.post('/deletecomment',requireLogin,deleteComment);
 router.get('/getactivityhistory/:userId',getActivityHistory);
 router.post('/upload', (req, res) => {
   upload(req, res, (err) => {
