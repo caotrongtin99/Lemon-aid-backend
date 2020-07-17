@@ -13,7 +13,6 @@ module.exports = (req,res,next) => {
       if(err){
        return   res.status(401).json({error:"you must be logged in"})
       }
-      console.log("=========================payload",payload)
       const {id} = payload
       getUserById(id).then(userdata=>{
           req.user = userdata

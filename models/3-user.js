@@ -38,12 +38,23 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
-    username: DataTypes.STRING,
+    username: {
+      type: DataTypes.STRING,
+      unique: true
+    },
     password: DataTypes.STRING,
     name: DataTypes.STRING,
-    avatar: DataTypes.STRING,
-    email: DataTypes.STRING,
+    avatar: {
+      type: DataTypes.STRING,
+      defaultValue: "https://www.kindpng.com/picc/m/24-248253_user-profile-default-image-png-clipart-png-download.png"
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique :true
+    },
     token: DataTypes.STRING,
+    resetToken : DataTypes.STRING,
+    expireToken : DataTypes.DATE
   }, {
     sequelize,
     modelName: 'User',
