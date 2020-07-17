@@ -44,6 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: DataTypes.STRING,
     name: DataTypes.STRING,
+    role : DataTypes.STRING,
     avatar: {
       type: DataTypes.STRING,
       defaultValue: "https://www.kindpng.com/picc/m/24-248253_user-profile-default-image-png-clipart-png-download.png"
