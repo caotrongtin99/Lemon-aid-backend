@@ -28,12 +28,15 @@ router.post("/reset-password",(req,res)=>{
     if (err){
       console.log(err)
     }
+    console.log("===================== 1 ===========================")
     const token = buffer.toString("hex")
     User.findOne({email: req.body.email})
       .then(user=>{
         if (!user){
           return res.status(422).json({error:"User dont exists with that email"})
         }
+        
+    console.log("===================== 2 ===========================")
         user.resetToken = token;
         user.expireToken = Date.now() + 3600000;
         user.save().then(result=>{
@@ -48,6 +51,8 @@ router.post("/reset-password",(req,res)=>{
             `
           };
           transporter.sendMail(mailOptions,(err,info)=>{
+            
+    console.log("===================== 3 ===========================")
             if (err){
               console.log(err)
             }else {
