@@ -58,6 +58,7 @@ exports.signup = (req,res) =>{
                 res.json({message:"check your email", token: token})
               }
             })
+            console.log("==========================send mail successfully====")
             res.status(200).json({
               message: "Sign up success! Please signin"
             });
