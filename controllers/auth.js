@@ -3,8 +3,14 @@ const User = require('../models/3-user');
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const nodemailer = require('nodemailer')
-const sendgridTransport = require('nodemailer-sendgrid-transport')
 
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'tin.caotrong@gmail.com',
+    pass: 'cttinLK1999@'
+  }
+});
 require("dotenv").config();
 exports.signup = (req,res) =>{
   const {username, name, email, password,confirmPassword} = req.body;
@@ -23,11 +29,6 @@ exports.signup = (req,res) =>{
     errs.push({message:"Please fill confirm password"});
   }
 
-  const transporter = nodemailer.createTransport(sendgridTransport({
-    auth:{
-        api_key:"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"
-    }
-  }))
 
   if (errs.length > 0){
     res.status(400).json({
@@ -44,12 +45,18 @@ exports.signup = (req,res) =>{
         }
         createUser(addedUser)
           .then(user=>{
-
-            transporter.sendMail({
+            var mailOptions = {
+              from: 'tin.caotrong@gmail.com',
               to: user.email,
-              from: 'no-reply@lemon-aid.com',
-              subject: "Sign up successfully!!!",
-              html: '<h1>Welcome to Lemon-aid'
+              subject: 'Welcome email',
+              text: 'Welcome to Lemon-aid!',
+            };
+            transporter.sendMail(mailOptions,(err,info)=>{
+              if (err){
+                console.log(err)
+              }else {
+                res.json({message:"check your email", token: token})
+              }
             })
             res.status(200).json({
               message: "Sign up success! Please signin"

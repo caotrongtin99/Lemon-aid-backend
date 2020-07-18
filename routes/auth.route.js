@@ -5,7 +5,6 @@ const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 var models = require('../models');
 let User = models.User;
-const sendgridTransport = require('nodemailer-sendgrid-transport')
 const {signin,signup,signout} = require('../controllers/auth')
 const { runValidation } = require("../validators");
 const {
