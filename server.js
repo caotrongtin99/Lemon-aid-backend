@@ -15,7 +15,7 @@ app.use(bodyParser.json())
 app.use("/api",require('./routes/auth.route'));
 app.use("/api/user",require('./routes/user.route'));
 app.use("/api",require('./routes/post.route'));
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8002;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
