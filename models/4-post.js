@@ -16,29 +16,34 @@ module.exports = (sequelize, DataTypes) => {
       Post.hasMany(models.Comment,{
         foreignKey: 'postId'
       })
-      Post.hasMany(models.PostIngredient,{
-        as: 'postingredient',
-        foreignKey: 'postId'
-      })
-      Post.hasMany(models.PostCategory,{
-        as: 'postcategory',
-        foreignKey: 'postId'
-      })
       Post.hasMany(models.PostLike,{
         as: 'postlike',
+        foreignKey: 'postId'
+      })
+      Post.hasMany(models.SavedPost,{
+        as: 'savedposts',
+        foreignKey: 'postId'
+      })
+      Post.hasMany(models.Step, {
         foreignKey: 'postId'
       })
     }
   };
   Post.init({
+    id : {
+      type: DataTypes.UUID,
+      primaryKey: true
+    },
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
+    ration: DataTypes.STRING,
+    cookingTime : DataTypes.STRING,
     url: DataTypes.STRING,
     avatar: DataTypes.STRING,
     content: DataTypes.STRING,
-    tag: DataTypes.STRING,
     ingredients : DataTypes.STRING,
-    categories: DataTypes.STRING
+    categories: DataTypes.STRING,
+    hashtags : DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',

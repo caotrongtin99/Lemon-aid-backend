@@ -34,6 +34,7 @@ router.post("/reset-password",(req,res)=>{
         if (!user){
           return res.status(422).json({error:"User dont exists with that email"})
         }
+        
         user.resetToken = token;
         user.expireToken = Date.now() + 3600000;
         user.save().then(result=>{

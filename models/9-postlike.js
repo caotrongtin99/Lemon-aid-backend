@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
        }
     },
     postId : {
-      type : DataTypes.INTEGER,
+      type : DataTypes.UUID,
       references : {
          model : 'Posts',
          key :'id'

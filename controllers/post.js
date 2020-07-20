@@ -1,4 +1,4 @@
-const {getAllPosts, createPost, updatePost, removePost, getPostById} = require('../services/post.service')
+const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep} = require('../services/post.service')
 const { createComment } = require('../services/user.service')
 exports.getAllPosts = (req,res) =>{
   getAllPosts()
@@ -17,8 +17,8 @@ exports.getAllPosts = (req,res) =>{
 }
 
 exports.createPost = (req,res) => {
-  const {title, description, url, avatar,content, tag, userId, categories, ingredients} = req.body;
-  const post = {title, description, url, avatar,content, tag, userId, categories, ingredients};
+  const {id, title, description, url, avatar,content, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
+  const post = {id, title, description, url, avatar, content, hashtags, userId, categories, ingredients, ration, cookingTime};
   createPost(post)
     .then(post=>{
       res.status(200).json({
@@ -33,8 +33,8 @@ exports.createPost = (req,res) => {
 }
 
 exports.updatePost = (req,res) => {
-  const {id, title, description, url, avatar,content, tag, userId, categories, ingredients} = req.body;
-  const post = {title, description, url, avatar,content, tag, userId, categories, ingredients};
+  const {id, title, description, url, avatar,content, hashtags, userId, categories, ingredients} = req.body;
+  const post = {title, description, url, avatar,content, hashtags, userId, categories, ingredients};
   updatePost(post,id)
     .then(post=>{
       res.status(200).json({
@@ -73,4 +73,34 @@ exports.getPostById = (req,res)=>{
     })
 }
 
+exports.createStep = (req,res) => {
+  const {stt, content, image, postId} = req.body;
+  const step = {stt, content, image, postId};
+  createStep(step)
+    .then(step=>{
+      res.status(200).json({
+        message: "Create Step successfully!!"
+      });
+    })
+    .catch(err=>{
+      res.status(400).json({
+        err : err
+      })
+    })
+}
+
+exports.removeStep = (req,res) => {
+  const {id} = req.body;
+  removeStep(id)
+    .then(result=>{
+      res.status(200).json({
+        message: "remove step successfully!!"
+      });
+    })
+    .catch(err=>{
+      res.status(400).json({
+        err : err
+      })
+    })
+}
 

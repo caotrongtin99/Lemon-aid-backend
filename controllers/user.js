@@ -133,7 +133,6 @@ exports.deleteComment = (req,res)=>{
 exports.getActivityHistory = (req,res) => {
   getActivityHistory(req.params.userId)
     .then(activity=>{
-      console.log("==================activity",activity)
       res.status(200).json({
         activity
       })
