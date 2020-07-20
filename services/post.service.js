@@ -37,6 +37,9 @@ exports.getAllPosts = () =>{
         as : 'postlike'
       },
       {
+        model: models.Step
+      },
+      {
         model: models.User
       },
       {
@@ -87,3 +90,14 @@ exports.getPostById = (id)=>{
       .catch(err => reject(Error(err)))
   })
 };
+
+exports.createStep = (step) =>{
+  return models.Step.create(step);
+}
+
+
+exports.removeStep = (id) => {
+  return models.Step.destroy({
+    where: {id : id}
+  })
+}

@@ -1,16 +1,10 @@
 {
   "development": {
-    "username": "cnwzcpvfqlzgfl",
-    "password": "465b802d3faa7f4b3d1adf5c9e00ad5c4fe8471e853c1db2f79d2f2f2df6731f",
-    "database": "d5tlltq0o2oo2q",
-    "host": "ec2-35-172-73-125.compute-1.amazonaws.com",
-    "dialect": "postgres",
-    "dialectOptions":{
-      "ssl": {
-        "require":true,
-        "rejectUnauthorized": false
-      }      
-    }
+    "username": "postgres",
+    "password": "postgres",
+    "database": "db_development",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
   },
   "test": {
     "username": "cnwzcpvfqlzgfl",

@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'postlike',
         foreignKey: 'userId'
       })
+      User.hasMany(models.SavedPost,{
+        as: 'user1',
+        foreignKey: 'userId'
+      })
     }
   };
   User.init({
@@ -44,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     password: DataTypes.STRING,
     name: DataTypes.STRING,
+    about: DataTypes.TEXT,
     role : DataTypes.STRING,
     avatar: {
       type: DataTypes.STRING,
