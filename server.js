@@ -1,6 +1,9 @@
 const express = require('express');
 const models = require('./models');
 const app = express();
+var cors = require("cors");
+
+app.use(cors());
 app.get('/sync',(req,res)=>{
   models.sequelize.sync({ force: false }).then(()=>{
     console.log("Sync successfully")
