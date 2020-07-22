@@ -77,9 +77,13 @@ exports.signup = (req,res) =>{
 
 exports.signin= (req,res) =>{
   const {username,password} = req.body;
-
   getUserByUsername(username)
     .then(user=>{
+      if (!user) {
+        return res.status(400).json({
+          err : "User exist!!!"
+        }) 
+      }
       if (user){
         if(!comparePassword(password,user.password)){
           return res.status(400).json({
