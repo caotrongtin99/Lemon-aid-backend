@@ -81,7 +81,7 @@ exports.signin= (req,res) =>{
     .then(user=>{
       if (!user) {
         return res.status(400).json({
-          err : "User exist!!!"
+          err : "Account does not exist!!!"
         }) 
       }
       if (user){
