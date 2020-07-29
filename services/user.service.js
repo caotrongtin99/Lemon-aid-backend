@@ -13,7 +13,7 @@ exports.getUserByEmail = (email)=>{
 
 exports.getFollowersOfUserByUserId = (userId) =>{
   return Follower.findAll({
-    where: {userId : userId},
+    where: {followerId : userId},
     include:[
       {
         model : models.User,
@@ -25,17 +25,25 @@ exports.getFollowersOfUserByUserId = (userId) =>{
 
 
 exports.getUserByUsername = (username)=>{
-  return new Promise((resolve,reject)=>{
-    let options = {
-      attribute: ['id','username','avatar','email','name'],
-      where: {
-        username : username
+  return User.findOne({
+    where : {username : username},
+    include : [
+      {
+        model: models.Post
+      },
+      {
+        model: models.Follower,
+        as : 'follower',
+        include : {
+          model : models.User,
+          as : 'follower'
+        }
+      },
+      {
+        model: models.PostLike,
+        as : 'postlike'
       }
-    }
-    models.User
-      .findOne(options)
-      .then(data=>{console.log(data);resolve(data)})
-      .catch(err => reject(Error(err)))
+    ]
   })
 };
 

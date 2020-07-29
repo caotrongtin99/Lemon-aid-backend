@@ -1,24 +1,30 @@
 const {getUserByUsername, getFollowersOfUserByUserId, createFollow, removeFollow, likePost, unlikePost, getFavoritePosts,createComment, deleteComment, getActivityHistory}= require('../services/user.service')
 const {getPostsByUserId} = require('../services/post.service');
 const { Result } = require('express-validator');
+//const { delete } = require('../routes/auth.route');
 exports.getInfoUser = (req,res) =>{
   const username = req.params.username;
   getUserByUsername(username)
     .then(user=>{
-      if (user){
-        const userId = user.id;
-        getPostsByUserId(userId)
-          .then(posts=>{
-            getFollowersOfUserByUserId(userId)
-            .then(followers=>{
-              res.status(200).json({
-                user,
-                posts : posts,
-                followers
-              })
-            })
+      let userData = user.dataValues;
+      userData.followings = userData.follower;
+      userData.likedPosts = userData.postlike;
+      delete userData.follower;
+      delete userData.postlike;
+      console.log("-==========USER BEFORE========",userData)
+      if (!user) {
+        return res.status(400).json({
+          message : "User does not exist!!!"
+        })
+      }
+      getFollowersOfUserByUserId(userData.id)
+        .then(followers=>{
+          userData.followers = followers;
+          console.log("==================user========",userData)
+          return res.status(200).json({
+            userData
           })
-        }
+        })
     })
 }
 

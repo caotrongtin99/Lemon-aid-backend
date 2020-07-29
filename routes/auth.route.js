@@ -29,7 +29,7 @@ router.post("/reset-password",(req,res)=>{
       console.log(err)
     }
     const token = buffer.toString("hex")
-    User.findOne({email: req.body.email})
+    User.findOne({ where : {email: req.body.email}})
       .then(user=>{
         if (!user){
           return res.status(422).json({error:"User dont exists with that email"})
