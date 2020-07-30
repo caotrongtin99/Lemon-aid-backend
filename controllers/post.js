@@ -17,8 +17,10 @@ exports.getAllPosts = (req,res) =>{
 }
 
 exports.createPost = (req,res) => {
-  const {id, title, description, url, avatar,content, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
-  const post = {id, title, description, url, avatar, content, hashtags, userId, categories, ingredients, ration, cookingTime};
+  const {id,title, description, url, avatar,steps, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
+  const content = JSON.stringify(steps);
+  const post = {id,title, description, url, avatar, content, hashtags, userId, categories, ingredients, ration, cookingTime};
+  console.log("================post=====",post)
   createPost(post)
     .then(post=>{
       res.status(200).json({

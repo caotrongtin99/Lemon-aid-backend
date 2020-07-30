@@ -1,16 +1,9 @@
 {
   "development": {
-    "username": "qnjwkkmqqgrcjj",
-    "password": "b63c7ead7fc0f1c369f6e84c53fee5a207cbd50d82989ac99ab7c74398289e57",
-    "database": "d2d3bjo1h8ci02",
-    "host": "ec2-50-19-26-235.compute-1.amazonaws.com",
-    "dialect": "postgres",
-    "dialectOptions":{
-      "ssl": {
-        "require":true,
-        "rejectUnauthorized": false
-      }      
-    }
+    "username": "postgres",
+    "password": "postgres",
+    "database": "db_dev",
+    "dialect": "postgres"
   },
   "test": {
     "username": "qnjwkkmqqgrcjj",
