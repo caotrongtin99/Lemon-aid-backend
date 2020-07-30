@@ -1,9 +1,15 @@
 const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep} = require('../services/post.service')
 const { createComment } = require('../services/user.service')
+const { post } = require('../routes/post.route')
 exports.getAllPosts = (req,res) =>{
   getAllPosts()
     .then(posts=>{
       if (posts){
+        for (let i = 0 ; i< posts.length; i++){
+          posts[i].dataValues.author = posts[i].dataValues.User;
+          posts[i].dataValues.content = JSON.parse(posts[i].dataValues.content)
+          delete posts[i].dataValues.User
+        }
         res.status(200).json({
           posts
         })

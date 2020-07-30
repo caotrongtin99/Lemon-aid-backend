@@ -4,7 +4,6 @@ let Post = models.Post;
 exports.getPostsByUserId = (userId) =>{
   return new Promise((resolve,reject)=>{
     let options = {
-      attribute: ['id','avatar','content','title,categories,ingredients'],
       where: {
         userId : userId
       },
