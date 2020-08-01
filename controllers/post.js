@@ -1,14 +1,19 @@
 const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep} = require('../services/post.service')
 const { createComment } = require('../services/user.service')
-const { post } = require('../routes/post.route')
 exports.getAllPosts = (req,res) =>{
   getAllPosts()
     .then(posts=>{
       if (posts){
+        console.log("=========================]",posts)
         for (let i = 0 ; i< posts.length; i++){
           posts[i].dataValues.author = posts[i].dataValues.User;
+          posts[i].dataValues.likes = posts[i].dataValues.postlike;
+          const user = posts[i].dataValues.postlike.postlike;
+          posts[i].dataValues.likes.user = user;
           posts[i].dataValues.content = JSON.parse(posts[i].dataValues.content)
-          delete posts[i].dataValues.User
+          delete posts[i].dataValues.User;
+          delete posts[i].dataValues.likes.postlike;
+          delete posts[i].dataValues.postlike;
         }
         res.status(200).json({
           posts
@@ -75,6 +80,14 @@ exports.getPostById = (req,res)=>{
   const {postid}  = req.params;
   getPostById(postid)
     .then(post=>{
+      post.dataValues.author = post.dataValues.User;
+      post.dataValues.likes = post.dataValues.postlike;
+      const user = post.dataValues.postlike.postlike;
+      post.dataValues.likes.user = user;
+      post.dataValues.content = JSON.parse(post.dataValues.content)
+      delete post.dataValues.User;
+      delete post.dataValues.likes.postlike;
+      delete post.dataValues.postlike;
       res.status(200).json({
         post
       })

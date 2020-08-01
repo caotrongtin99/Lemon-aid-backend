@@ -33,7 +33,13 @@ exports.getAllPosts = () =>{
     include: [
       {
         model : models.PostLike,
-        as : 'postlike'
+        as : 'postlike',
+        include : [
+          {
+            model: models.User,
+            as : 'postlike'
+          }
+        ]
       },
       {
         model: models.Step
@@ -73,7 +79,16 @@ exports.getPostById = (id)=>{
       include: [
         {
           model : models.PostLike,
-          as : 'postlike'
+          as : 'postlike',
+          include : [
+            {
+              model: models.User,
+              as : 'postlike'
+            }
+          ]
+        },
+        {
+          model: models.Step
         },
         {
           model: models.User
