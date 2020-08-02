@@ -1,11 +1,15 @@
-const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep} = require('../services/post.service')
-const { createComment } = require('../services/user.service')
+const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings, getPostsByUserId, getFavoritePostsByUserId} = require('../services/post.service')
 exports.getAllPosts = (req,res) =>{
   getAllPosts()
     .then(posts=>{
       if (posts){
-        console.log("=========================]",posts)
-        for (let i = 0 ; i< posts.length; i++){
+        for (var i = 0 ; i< posts.length; i++){
+          for (let j = 0 ; j < posts[i].dataValues.Comments.length ; j++){
+            if (posts[i].dataValues.Comments[j].dataValues.parentCommentId !== null){
+              posts[i].dataValues.Comments.splice(j,1);
+              j--;
+            }
+          }
           posts[i].dataValues.author = posts[i].dataValues.User;
           posts[i].dataValues.likes = posts[i].dataValues.postlike;
           const user = posts[i].dataValues.postlike.postlike;
@@ -27,11 +31,45 @@ exports.getAllPosts = (req,res) =>{
     })
 }
 
+exports.getPostsByTabs = (req,res) =>{
+  const {userId} = req.query;
+  console.log(req.query)
+  getPostsFromFollowings(userId)
+    .then(posts=>{
+      let followingPosts = [];
+      if (posts){
+        for (let i = 0; i < posts.length ; i++){
+          console.log(posts[i].dataValues.follower.dataValues.Posts)
+          for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
+            followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
+          }
+        }
+      }
+      getPostsByUserId(userId)
+        .then(myPosts=>{
+          getFavoritePostsByUserId(userId)
+            .then(favoritePosts=>{
+              res.status(200).json({
+                favoritePosts,
+                myPosts,
+                followingPosts
+              })
+            })
+        })
+    })
+    .catch(err=>{
+      console.log(err);
+      
+      res.status(400).json({
+        err
+      })
+    })
+}
+
 exports.createPost = (req,res) => {
-  const {id,title, description, url, avatar,steps, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
+  const {id,title, description, url, avatar,steps, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
   const content = JSON.stringify(steps);
-  const post = {id,title, description, url, avatar, content, hashtags, userId, categories, ingredients, ration, cookingTime};
-  console.log("================post=====",post)
+  const post = {id,title, description, url, avatar, content, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime};
   createPost(post)
     .then(post=>{
       res.status(200).json({
@@ -85,6 +123,16 @@ exports.getPostById = (req,res)=>{
       const user = post.dataValues.postlike.postlike;
       post.dataValues.likes.user = user;
       post.dataValues.content = JSON.parse(post.dataValues.content)
+      
+      for (let i = 0 ; i < post.dataValues.Comments.length ; i++){
+        if (post.dataValues.Comments[i].dataValues.parentCommentId !== null){
+          post.dataValues.Comments.splice(i,1);
+          i--;
+        }
+      }
+      let ingredients = post.dataValues.ingredients.split('|');
+      post.dataValues.ingredients = ingredients;
+      console.log("=================Ingredients=============",ingredients)
       delete post.dataValues.User;
       delete post.dataValues.likes.postlike;
       delete post.dataValues.postlike;
@@ -93,6 +141,8 @@ exports.getPostById = (req,res)=>{
       })
     })
 }
+
+//exports.getPostsFromFollowings
 
 exports.createStep = (req,res) => {
   const {stt, content, image, postId} = req.body;

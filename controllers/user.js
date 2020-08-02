@@ -11,7 +11,6 @@ exports.getInfoUser = (req,res) =>{
       userData.likedPosts = userData.postlike;
       delete userData.follower;
       delete userData.postlike;
-      console.log("-==========USER BEFORE========",userData)
       if (!user) {
         return res.status(400).json({
           message : "User does not exist!!!"
@@ -20,7 +19,6 @@ exports.getInfoUser = (req,res) =>{
       getFollowersOfUserByUserId(userData.id)
         .then(followers=>{
           userData.followers = followers;
-          console.log("==================user========",userData)
           return res.status(200).json({
             userData
           })

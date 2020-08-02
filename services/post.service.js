@@ -1,4 +1,5 @@
 var models = require('../models');
+//const { Model } = require('sequelize/types');
 let Post = models.Post;
 
 exports.getPostsByUserId = (userId) =>{
@@ -48,7 +49,55 @@ exports.getAllPosts = () =>{
         model: models.User
       },
       {
-        model: models.Comment
+        model: models.Comment,
+        include : [
+          {
+          model : models.Comment,
+          as : 'SubComment'
+          }
+        ]
+      }
+    ]
+  })
+}
+
+exports.getPostsFromFollowings = (userid) =>{
+  return models.Follower.findAll({
+    where: {
+      userId : userid
+    },
+    include : [
+      {
+        model: models.User,
+        as :'follower',
+        include: [
+          {
+            model : models.Post
+          }
+        ]
+      }
+    ]
+  })
+}
+
+
+exports.getPostsByUserId = (userid) =>{
+  return models.Post.findAll({
+    where: {
+      userId : userid
+    }
+  })
+}
+
+exports.getFavoritePostsByUserId = (userid) =>{
+  return models.PostLike.findAll({
+    where: {
+      userId : userid
+    },
+    include : [
+      {
+        model : models.Post,
+        as : 'post'
       }
     ]
   })
@@ -94,13 +143,19 @@ exports.getPostById = (id)=>{
           model: models.User
         },
         {
-          model: models.Comment
+          model: models.Comment,
+          include : [
+            {
+            model : models.Comment,
+            as : 'SubComment'
+            }
+          ]
         }
       ]
     }
     models.Post
       .findOne(options)
-      .then(data=>{console.log(data);resolve(data)})
+      .then(data=>{resolve(data)})
       .catch(err => reject(Error(err)))
   })
 };

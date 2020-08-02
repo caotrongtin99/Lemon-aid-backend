@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     difficultLevel: DataTypes.INTEGER,
     url: DataTypes.STRING,
     avatar: DataTypes.STRING,
-    content: DataTypes.STRING,
+    content: DataTypes.TEXT,
     ingredients : DataTypes.STRING,
     categories: DataTypes.STRING,
     hashtags : DataTypes.STRING

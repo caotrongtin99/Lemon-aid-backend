@@ -58,7 +58,7 @@ exports.getUserById = (id)=>{
     }
     models.User
       .findOne(options)
-      .then(data=>{console.log(data);resolve(data)})
+      .then(data=>{resolve(data)})
       .catch(err => reject(Error(err)))
   })
 };
