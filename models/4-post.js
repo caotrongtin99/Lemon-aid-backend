@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
   Post.init({
     id : {
       type: DataTypes.UUID,
-      primaryKey: true
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
@@ -40,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
     cookingTime : DataTypes.INTEGER,
     difficultLevel: DataTypes.INTEGER,
     url: DataTypes.STRING,
-    avatar: DataTypes.STRING,
+    avatar: DataTypes.TEXT,
     content: DataTypes.TEXT,
     ingredients : DataTypes.STRING,
     categories: DataTypes.STRING,

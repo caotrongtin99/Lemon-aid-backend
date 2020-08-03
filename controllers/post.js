@@ -1,4 +1,6 @@
-const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings, getPostsByUserId, getFavoritePostsByUserId} = require('../services/post.service')
+const _ = require('lodash');
+const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings, getPostsByUserId, getFavoritePostsByUserId} = require('../services/post.service');
+const upload = require('../services/image.service');
 exports.getAllPosts = (req,res) =>{
   getAllPosts()
     .then(posts=>{
@@ -15,6 +17,7 @@ exports.getAllPosts = (req,res) =>{
           const user = posts[i].dataValues.postlike.postlike;
           posts[i].dataValues.likes.user = user;
           posts[i].dataValues.content = JSON.parse(posts[i].dataValues.content)
+
           delete posts[i].dataValues.User;
           delete posts[i].dataValues.likes.postlike;
           delete posts[i].dataValues.postlike;
@@ -39,7 +42,6 @@ exports.getPostsByTabs = (req,res) =>{
       let followingPosts = [];
       if (posts){
         for (let i = 0; i < posts.length ; i++){
-          console.log(posts[i].dataValues.follower.dataValues.Posts)
           for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
             followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
           }
@@ -66,10 +68,21 @@ exports.getPostsByTabs = (req,res) =>{
     })
 }
 
-exports.createPost = (req,res) => {
-  const {id,title, description, url, avatar,steps, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
-  const content = JSON.stringify(steps);
-  const post = {id,title, description, url, avatar, content, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime};
+exports.createPost = async (req,res) => {
+  const {title, description,steps, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
+  let {avatar} = req.body;
+  const featuredImage = await upload(avatar);
+  avatar = featuredImage.data.link;
+  console.log("avatar==================",avatar)
+  const newSteps = await Promise.all(steps.map(async (step) => {
+    if (step.image) {
+      const response = await upload(step.image);
+      step.image = response.data.link;
+    }
+    return step;
+  }))
+  const content = JSON.stringify(newSteps);
+  const post = {title, description, avatar, content, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime};
   createPost(post)
     .then(post=>{
       res.status(200).json({
@@ -123,7 +136,10 @@ exports.getPostById = (req,res)=>{
       const user = post.dataValues.postlike.postlike;
       post.dataValues.likes.user = user;
       post.dataValues.content = JSON.parse(post.dataValues.content)
-      
+      // for (let z = 0; z < post.dataValues.content.length; z++){
+      //   if (post.dataValues.content[z].image){
+      //   }
+      // }
       for (let i = 0 ; i < post.dataValues.Comments.length ; i++){
         if (post.dataValues.Comments[i].dataValues.parentCommentId !== null){
           post.dataValues.Comments.splice(i,1);
@@ -131,8 +147,9 @@ exports.getPostById = (req,res)=>{
         }
       }
       let ingredients = post.dataValues.ingredients.split('|');
+      let categories = post.dataValues.categories.split('|');
+      post.dataValues.categories = categories;
       post.dataValues.ingredients = ingredients;
-      console.log("=================Ingredients=============",ingredients)
       delete post.dataValues.User;
       delete post.dataValues.likes.postlike;
       delete post.dataValues.postlike;

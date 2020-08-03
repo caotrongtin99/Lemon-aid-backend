@@ -5,7 +5,6 @@ const upload = async (image) => {
 
   try {
     const response = await axios.post(BASE_API, { image });
-
     if (response.status !== 200) {
       return { error: "Error: Can not upload this image!" };
     }
