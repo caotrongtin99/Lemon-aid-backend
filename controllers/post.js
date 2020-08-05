@@ -73,7 +73,6 @@ exports.createPost = async (req,res) => {
   let {avatar} = req.body;
   const featuredImage = await upload(avatar);
   avatar = featuredImage.data.link;
-  console.log("avatar==================",avatar)
   const newSteps = await Promise.all(steps.map(async (step) => {
     if (step.image) {
       const response = await upload(step.image);
@@ -96,14 +95,35 @@ exports.createPost = async (req,res) => {
     })
 }
 
-exports.updatePost = (req,res) => {
-  const {id, title, description, url, avatar,content, hashtags, userId, categories, ingredients} = req.body;
-  const post = {title, description, url, avatar,content, hashtags, userId, categories, ingredients};
-  updatePost(post,id)
-    .then(post=>{
+exports.updatePost = async (req, res) => {
+  const {postid} = req.params;
+  let postData = {
+    ...req.body
+  }
+
+  if (postData.avatar){
+    const response = await upload(postData.avatar);
+    postData.avatar = response.data.link;
+  }
+  if (postData.steps){
+    const newSteps = await Promise.all(postData.steps.map(async (step) => {
+      if (step.image) {
+        const response = await upload(step.image);
+        step.image = response.data.link;
+      }
+      return step;
+    }))
+    postData.content = JSON.stringify(newSteps);
+    delete postData.steps;
+  }
+
+  console.log("Post data",postData)
+  
+  updatePost(postData,postid)
+    .then(response=>{
       res.status(200).json({
-        message: "Update post successfully!!"
-      });
+        message:"Update successfully"
+      })
     })
     .catch(err=>{
       res.status(400).json({
@@ -111,6 +131,22 @@ exports.updatePost = (req,res) => {
       })
     })
 }
+
+// exports.updatePost = (req,res) => {
+//   const {id, title, description, url, avatar,content, hashtags, userId, categories, ingredients} = req.body;
+//   const post = {title, description, url, avatar,content, hashtags, userId, categories, ingredients};
+//   updatePost(post,id)
+//     .then(post=>{
+//       res.status(200).json({
+//         message: "Update post successfully!!"
+//       });
+//     })
+//     .catch(err=>{
+//       res.status(400).json({
+//         err : err
+//       })
+//     })
+// }
 
 exports.removePost = (req,res) => {
   const {id} = req.body;

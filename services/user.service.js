@@ -23,6 +23,14 @@ exports.getFollowersOfUserByUserId = (userId) =>{
   })
 }
 
+exports.updateUserInfo = (userData, userId) => {
+  return User.update(userData,{
+    where : {
+      id : userId
+    }
+  })
+}
+
 
 exports.getUserByUsername = (username)=>{
   return User.findOne({

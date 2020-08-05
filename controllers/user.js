@@ -1,6 +1,7 @@
-const {getUserByUsername, getFollowersOfUserByUserId, createFollow, removeFollow, likePost, unlikePost, getFavoritePosts,createComment, deleteComment, getActivityHistory}= require('../services/user.service')
+const {getUserByUsername, getFollowersOfUserByUserId, createFollow, removeFollow, likePost, unlikePost, getFavoritePosts,createComment, deleteComment, getActivityHistory, updateUserInfo}= require('../services/user.service')
 const {getPostsByUserId} = require('../services/post.service');
 const { Result } = require('express-validator');
+const upload = require('../services/image.service');
 //const { delete } = require('../routes/auth.route');
 exports.getInfoUser = (req,res) =>{
   const username = req.params.username;
@@ -24,6 +25,32 @@ exports.getInfoUser = (req,res) =>{
           })
         })
     })
+}
+
+exports.updateUserInfo = async (req,res) =>{
+  const {userid} = req.params;
+  const userData = {
+    ...req.body
+  }
+  if (userData.avatar){
+    const response = await upload(userData.avatar);
+    userData.avatar = response.data.link;
+  }
+
+  updateUserInfo(userData,userid)
+    .then(response=>{
+      console.log("response",response)
+      res.status(200).json({
+        message : "Update successfully!"
+      })
+    })
+    .catch(err=>{
+      console.log("err",err)
+      res.status(400).json({
+        err : err
+      })
+    })
+  
 }
 
 exports.follow = (req,res) =>{

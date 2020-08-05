@@ -7,8 +7,8 @@ router.get("/post", getAllPosts);
 router.get("/post/getPostsByTabs",requireLogin,getPostsByTabs)
 router.get("/post/getpost/:postid",getPostById);
 router.post("/post/create",requireLogin,createPost);
-router.post("/post/update",requireLogin,updatePost);
 router.post("/post/remove",requireLogin,removePost);
+router.put("/post/update/:postid",requireLogin,updatePost);
 router.post("/step/create",requireLogin,createStep);
 router.post("/step/remove",requireLogin,removeStep);
 module.exports = router;
