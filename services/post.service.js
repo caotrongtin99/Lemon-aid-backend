@@ -1,7 +1,7 @@
 var models = require('../models');
 //const { Model } = require('sequelize/types');
 let Post = models.Post;
-
+const Sequelize = require('sequelize')
 exports.getPostsByUserId = (userId) =>{
   return new Promise((resolve,reject)=>{
     let options = {
@@ -169,4 +169,80 @@ exports.removeStep = (id) => {
   return models.Step.destroy({
     where: {id : id}
   })
+}
+
+exports.searchPosts = (query) => {
+  return new Promise((resolve,reject)=>{
+    let options = {
+      where : {
+
+      }
+    }
+
+    if (query.search !== ''){
+      options.where = {
+        title : {	
+          [Sequelize.Op.iLike] : `%${query.search}%`
+        }
+      }
+    }
+
+    if (query.level !== ''){
+      switch (query.level){
+				case 'easy': 
+					options.where = {
+            [Sequelize.Op.or] : [
+              {difficultLevel : 1},
+              {difficultLevel : 2},
+              {difficultLevel : 3},
+            ]
+          }
+					break;
+				case 'normal':
+          options.where = {
+            [Sequelize.Op.or] : [
+              {difficultLevel : 4},
+              {difficultLevel : 5},
+              {difficultLevel : 6},
+              {difficultLevel : 7},
+            ]
+          }
+					break;
+				default:
+          options.where = {
+            [Sequelize.Op.or] : [
+              {difficultLevel : 8},
+              {difficultLevel : 9},
+              {difficultLevel : 10},
+            ]
+          }
+		
+			}
+    }
+
+    if (query.sort !== ''){
+      if (query.sort == 'latest'){
+        options.order = [
+          ['createdAt','DESC']
+        ]
+      }
+    }
+
+    models.Post
+      .findAndCountAll(options)
+      .then(data=>resolve(data))
+      .catch(err => reject(new Error(err)))
+  })
+}
+
+exports.countLikesOfPost = (postId) =>{
+  models.PostLike.findAll(
+    {
+        attributes: ['PostLike.postId', [sequelize.fn('COUNT', sequelize.col('PostLike.postId')), 'CountLike']],
+        group: ['PostLike.postId'],
+        raw:true
+    }
+  ).then(function (numLikes) {
+    return numLikes;
+});
 }

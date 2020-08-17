@@ -8,7 +8,7 @@ router.get("/:username", getInfoUser);
 router.put("/update/:userid",updateUserInfo);
 router.post("/follow",requireLogin,follow);
 router.post("/unfollow",requireLogin,unfollow);
-router.post("/likePost",requireLogin,likePost);
+router.post("/likePost",likePost);
 router.post("/unlikePost",requireLogin,unlikePost);
 router.get('/favoriteposts/:userId',requireLogin,getFavoritePosts);
 router.post('/comment',requireLogin,createComment);

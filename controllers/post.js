@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings, getPostsByUserId, getFavoritePostsByUserId} = require('../services/post.service');
+const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings, getPostsByUserId, getFavoritePostsByUserId, searchPosts, countLikesOfPost} = require('../services/post.service');
 const upload = require('../services/image.service');
 exports.getAllPosts = (req,res) =>{
   getAllPosts()
@@ -38,10 +38,12 @@ exports.getPostsByTabs = (req,res) =>{
   const {userId} = req.query;
   console.log(req.query)
   getPostsFromFollowings(userId)
-    .then(posts=>{
+    .then(async(posts)=>{
       let followingPosts = [];
       if (posts){
         for (let i = 0; i < posts.length ; i++){
+          const numLike = await countLikesOfPost(posts[i].id);
+          console.log(`${posts[i].id} =============== ${numLike}`)      
           for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
             followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
           }
@@ -225,6 +227,31 @@ exports.removeStep = (req,res) => {
       res.status(400).json({
         err : err
       })
+    })
+}
+
+exports.searchPosts = (req,res) => {
+  if (req.query.duration == null){
+    req.query.duration = ''
+  }
+  if (req.query.level == null){
+    req.query.level = ''
+  }
+  if (req.query.sort==null){
+    req.query.sort = 'latest'
+  }
+  if (req.query.search == null){
+    req.query.search = ''
+  }
+  const request = req.query;
+  searchPosts(request)
+    .then(data=>{
+      res.status(200).json({
+        posts : data
+      })
+    })
+    .catch(err=>{
+      console.log(err)
     })
 }
 
