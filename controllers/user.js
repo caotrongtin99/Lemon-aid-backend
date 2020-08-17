@@ -12,6 +12,11 @@ exports.getInfoUser = (req,res) =>{
       userData.likedPosts = userData.postlike;
       delete userData.follower;
       delete userData.postlike;
+      for (let j = 0; j < userData.followings.length ;j ++){
+        userData.followings[j].dataValues.user = userData.followings[j].dataValues.follower;
+        delete userData.followings[j].dataValues.follower;
+      }
+
       if (!user) {
         return res.status(400).json({
           message : "User does not exist!!!"

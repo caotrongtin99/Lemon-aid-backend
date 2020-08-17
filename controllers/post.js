@@ -41,9 +41,7 @@ exports.getPostsByTabs = (req,res) =>{
     .then(async(posts)=>{
       let followingPosts = [];
       if (posts){
-        for (let i = 0; i < posts.length ; i++){
-          const numLike = await countLikesOfPost(posts[i].id);
-          console.log(`${posts[i].id} =============== ${numLike}`)      
+        for (let i = 0; i < posts.length ; i++){  
           for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
             followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
           }

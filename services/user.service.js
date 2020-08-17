@@ -46,10 +46,6 @@ exports.getUserByUsername = (username)=>{
           model : models.User,
           as : 'follower'
         }
-      },
-      {
-        model: models.PostLike,
-        as : 'postlike'
       }
     ]
   })
