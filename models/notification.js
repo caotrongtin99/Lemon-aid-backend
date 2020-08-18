@@ -12,12 +12,24 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Notification.belongsTo(models.User,{
-        as : 'sender',
+        as : 'notificationSender',
         foreignKey:'senderId'
       });
       Notification.belongsTo(models.User,{
-        as : 'receiver',
+        as : 'notificationReceiver',
         foreignKey:'receiverId'
+      });
+      Notification.belongsTo(models.PostLike,{
+        as : 'likeAction',
+        foreignKey:'like'
+      });
+      Notification.belongsTo(models.Follower,{
+        as : 'followAction',
+        foreignKey:'follow'
+      });
+      Notification.belongsTo(models.Comment,{
+        as : 'commentAction',
+        foreignKey:'comment'
       });
     }
   };
@@ -37,6 +49,31 @@ module.exports = (sequelize, DataTypes) => {
          key :'id'
        }
     },
+    like: {
+      type : DataTypes.INTEGER,
+      references : {
+         model : 'PostLikes',
+         key :'id'
+       }
+    },
+    follow: {
+      type : DataTypes.UUID,
+      references : {
+         model : 'Followers',
+         key :'id'
+       }
+    },
+    comment: {
+      type : DataTypes.INTEGER,
+      references : {
+         model : 'Comments',
+         key :'id'
+       }
+    },
+    isSeen : {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'Notification',

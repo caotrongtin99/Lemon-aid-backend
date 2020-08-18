@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       Comment.belongsTo(models.Post,{
         foreignKey:'postId'
       })
+      Comment.hasOne(models.Notification,{
+        as: 'commentAction',
+        foreignKey:'comment'
+      })
       Comment.belongsTo(models.Comment,{
         as : 'ParentComment',
         foreignKey : 'parentCommentId'

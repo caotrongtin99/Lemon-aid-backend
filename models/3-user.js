@@ -21,11 +21,21 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       User.hasMany(models.Notification, {
-        as : 'sender',
+        as : 'notificationSender',
         foreignKey : 'senderId'
       });
 
       User.hasMany(models.Notification, {
+        as : 'notificationReceiver',
+        foreignKey : 'receiverId'
+      });
+
+      User.hasMany(models.Message, {
+        as : 'sender',
+        foreignKey : 'senderId'
+      });
+
+      User.hasMany(models.Message, {
         as : 'receiver',
         foreignKey : 'receiverId'
       });

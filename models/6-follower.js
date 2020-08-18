@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         as : 'follower',
         foreignKey:'followerId'
       });
+      Follower.hasOne(models.Notification,{
+        as: 'followAction',
+        foreignKey:'follow'
+      })
     }
   };
   Follower.init({

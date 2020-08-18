@@ -3,46 +3,50 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class PostLike extends Model {
+  class Message extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      PostLike.belongsTo(models.Post,{
-        as:'post',
-        foreignKey:'postId'
+      // define association here
+      Message.belongsTo(models.User,{
+        as : 'sender',
+        foreignKey:'senderId'
       });
-      PostLike.belongsTo(models.User,{
-        as:'postlike',
-        foreignKey:'userId'
-      })
-      PostLike.hasOne(models.Notification,{
-        as:'likeAction',
-        foreignKey:'like'
-      })
+      Message.belongsTo(models.User,{
+        as : 'receiver',
+        foreignKey:'receiverId'
+      });
+
     }
   };
-  PostLike.init({
-    number: DataTypes.INTEGER,
-    userId: {
+  Message.init({
+    senderId : {
       type : DataTypes.UUID,
       references : {
          model : 'Users',
          key :'id'
        }
     },
-    postId : {
+    receiverId : {
       type : DataTypes.UUID,
       references : {
-         model : 'Posts',
+         model : 'Users',
          key :'id'
        }
     },
+    message : DataTypes.TEXT,
+    messageType: DataTypes.STRING,
+    photo : DataTypes.STRING,
+    isSeen : {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
-    modelName: 'PostLike',
+    modelName: 'Message',
   });
-  return PostLike;
+  return Message;
 };
