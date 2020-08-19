@@ -127,10 +127,12 @@ exports.getPostById = (id)=>{
       },
       include: [
         {
+          attributes:['id'],
           model : models.PostLike,
           as : 'postlike',
           include : [
             {
+              attributes:['id','username','avatar'],
               model: models.User,
               as : 'postlike'
             }
@@ -140,14 +142,27 @@ exports.getPostById = (id)=>{
           model: models.Step
         },
         {
+          attributes:['id','username','avatar'],
           model: models.User
         },
         {
+          attributes:['id','message','userId','parentCommentId'],
           model: models.Comment,
           include : [
             {
-            model : models.Comment,
-            as : 'SubComment'
+              attributes:['id','message','userId'],
+              model : models.Comment,
+              as : 'SubComment',
+              include: [
+                {
+                  attributes:['id','username','avatar'],
+                  model: models.User
+                }
+              ]
+            },
+            {
+              attributes:['id','username','avatar'],
+              model: models.User
             }
           ]
         }

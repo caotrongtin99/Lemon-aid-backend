@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const {getInfoUser, follow,unfollow,likePost,unlikePost, getFavoritePosts, createComment,deleteComment, getActivityHistory, updateUserInfo} = require('../controllers/user');
+const {getInfoUser, follow,unfollow,likePost,unlikePost, getFavoritePosts,getNotifications, createComment,deleteComment, getActivityHistory, updateUserInfo} = require('../controllers/user');
 const requireLogin = require('../middlewares/requireLogin');
 router.get("/:username",requireLogin, getInfoUser);
 router.put("/update/:userid",requireLogin,updateUserInfo);
@@ -14,6 +14,7 @@ router.get('/favoriteposts/:userId',requireLogin,getFavoritePosts);
 router.post('/comment',requireLogin,createComment);
 router.post('/deletecomment',requireLogin,deleteComment);
 router.get('/getactivityhistory/:userId',getActivityHistory);
+router.get("/notification/getnotifications/:userId",getNotifications);
 router.post('/upload', (req, res) => {
   upload(req, res, (err) => {
      if(err){

@@ -13,9 +13,11 @@ exports.getUserByEmail = (email)=>{
 
 exports.getFollowersOfUserByUserId = (userId) =>{
   return Follower.findAll({
+    attributes: ['id'],
     where: {followerId : userId},
     include:[
       {
+        attributes:['id','username','avatar'],
         model : models.User,
         as : 'user'
       }
@@ -34,15 +36,18 @@ exports.updateUserInfo = (userData, userId) => {
 
 exports.getUserByUsername = (username)=>{
   return User.findOne({
+    attributes: ['id','username','avatar','email','password'],
     where : {username : username},
     include : [
       {
         model: models.Post
       },
       {
+        attributes: ['id'],
         model: models.Follower,
         as : 'follower',
         include : {
+          attributes:['id','username','avatar'],
           model : models.User,
           as : 'follower'
         }
@@ -55,7 +60,7 @@ exports.getUserByUsername = (username)=>{
 exports.getUserById = (id)=>{
   return new Promise((resolve,reject)=>{
     let options = {
-      attribute: ['id','username','avatar','email','name'],
+      attribute: ['id','username','avatar','email'],
       where: {
         id : id
       }

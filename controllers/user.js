@@ -2,6 +2,7 @@ const {getUserByUsername, getFollowersOfUserByUserId, createFollow, removeFollow
 const {getPostsByUserId} = require('../services/post.service');
 const { Result } = require('express-validator');
 const upload = require('../services/image.service');
+const { getNotificationsOfUser, createNotification } = require('../services/notification.service');
 //const { delete } = require('../routes/auth.route');
 exports.getInfoUser = (req,res) =>{
   const username = req.params.username;
@@ -62,9 +63,17 @@ exports.follow = (req,res) =>{
   const {userId, followerId} = req.body;
   createFollow(userId, followerId) 
     .then(result=>{
-      res.status(200).json({
-        message: "Follow successfully!!"
-      });
+      const notification = {
+        senderId : userId,
+        receiverId : followerId,
+        follow: result.id
+      }
+      createNotification(notification)
+        .then(success=>{
+          res.status(200).json({
+            message: "Follow and create notification successfully!!"
+          });
+        })
     })
     .catch(err=>{
       res.status(400).json({
@@ -175,4 +184,17 @@ exports.getActivityHistory = (req,res) => {
     })
 }
 
+exports.getNotifications = (req,res) =>{
+  console.log("==============VAO DAY CHU============")
+  const {userId} = req.params;
+  getNotificationsOfUser(userId)
+    .then(notifications=>{
+      res.status(200).json({
+        notifications
+      })
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+}
 

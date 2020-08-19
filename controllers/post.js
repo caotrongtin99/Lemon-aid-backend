@@ -85,7 +85,8 @@ exports.createPost = async (req,res) => {
   createPost(post)
     .then(post=>{
       res.status(200).json({
-        message: "Post successfully!!"
+        message: "Post successfully!!",
+        post
       });
     })
     .catch(err=>{
