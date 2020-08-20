@@ -35,9 +35,10 @@ exports.getAllPosts = (req,res) =>{
 }
 
 exports.getPostsByTabs = (req,res) =>{
-  const {userId} = req.query;
+  const {userId,type,limit,page} = req.query;
+  
   console.log(req.query)
-  getPostsFromFollowings(userId)
+  getPostsFromFollowings(userId,limit,page)
     .then(async(posts)=>{
       let followingPosts = [];
       if (posts){
@@ -47,19 +48,37 @@ exports.getPostsByTabs = (req,res) =>{
           }
         }
       }
-      getPostsByUserId(userId)
+      getPostsByUserId(userId,limit,page)
         .then(myPosts=>{
-          getFavoritePostsByUserId(userId)
+          getFavoritePostsByUserId(userId,limit,page)
             .then(favoritePosts=>{
               const formatFavoritePosts = favoritePosts.map((post)=>{
                 console.log( post.dataValues.post.dataValues)
                 return post.dataValues.post.dataValues;
               })
-              res.status(200).json({
-                favoritePosts: formatFavoritePosts,
-                myPosts,
-                followingPosts
-              })
+              if (type === "favorite"){
+                res.status(200).json({
+                  favoritePosts: formatFavoritePosts,
+                  numberMyPosts: myPosts.length,
+                  numberOfFollowingPosts: followingPosts.length,
+                  numberFavoritePosts: favoritePosts.length
+                })
+              } else if (type === "following"){
+                res.status(200).json({
+                  followingPosts,
+                  numberMyPosts: myPosts.length,
+                  numberOfFollowingPosts: followingPosts.length,
+                  numberFavoritePosts: favoritePosts.length
+                })
+              } else {
+                res.status(200).json({
+                  myPosts,
+                  numberMyPosts: myPosts.length,
+                  numberOfFollowingPosts: followingPosts.length,
+                  numberFavoritePosts: favoritePosts.length
+                })
+              }
+
             })
         })
     })
@@ -80,6 +99,7 @@ exports.createPost = async (req,res) => {
   const newSteps = await Promise.all(steps.map(async (step) => {
     if (step.image) {
       const response = await upload(step.image);
+      console.log(response)
       step.image = response.data.link;
     }
     return step;

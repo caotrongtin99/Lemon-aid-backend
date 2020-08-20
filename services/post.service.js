@@ -61,8 +61,10 @@ exports.getAllPosts = () =>{
   })
 }
 
-exports.getPostsFromFollowings = (userid) =>{
+exports.getPostsFromFollowings = (userid,limit,page) =>{
   return models.Follower.findAll({
+    limit : limit,
+    offset: limit * (page -1),
     where: {
       userId : userid
     },
@@ -87,16 +89,26 @@ exports.getPostsFromFollowings = (userid) =>{
 }
 
 
-exports.getPostsByUserId = (userid) =>{
+exports.getPostsByUserId = (userid,limit,page) =>{
   return models.Post.findAll({
+    limit : limit,
+    offset: limit * (page -1),
     where: {
       userId : userid
-    }
+    },
+    include: [
+      {
+        attributes: ['id','username','avatar'],
+        model: models.User
+      }
+    ]
   })
 }
 
-exports.getFavoritePostsByUserId = (userid) =>{
+exports.getFavoritePostsByUserId = (userid,limit,page) =>{
   return models.PostLike.findAll({
+    limit : limit,
+    offset: limit * (page -1),
     where: {
       userId : userid
     },
