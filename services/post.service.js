@@ -72,7 +72,13 @@ exports.getPostsFromFollowings = (userid) =>{
         as :'follower',
         include: [
           {
-            model : models.Post
+            model : models.Post,
+            include: [
+              {
+                attributes: ['id','username','avatar'],
+                model: models.User
+              }
+            ]
           }
         ]
       }
@@ -97,8 +103,14 @@ exports.getFavoritePostsByUserId = (userid) =>{
     include : [
       {
         model : models.Post,
-        as : 'post'
-      }
+        as : 'post',
+        include: [
+          {
+            attributes: ['id','username','avatar'],
+            model: models.User
+          }
+        ]
+      },
     ]
   })
 }

@@ -51,8 +51,12 @@ exports.getPostsByTabs = (req,res) =>{
         .then(myPosts=>{
           getFavoritePostsByUserId(userId)
             .then(favoritePosts=>{
+              const formatFavoritePosts = favoritePosts.map((post)=>{
+                console.log( post.dataValues.post.dataValues)
+                return post.dataValues.post.dataValues;
+              })
               res.status(200).json({
-                favoritePosts,
+                favoritePosts: formatFavoritePosts,
                 myPosts,
                 followingPosts
               })
@@ -190,6 +194,10 @@ exports.getPostById = (req,res)=>{
       delete post.dataValues.User;
       delete post.dataValues.likes.postlike;
       delete post.dataValues.postlike;
+      for (let j = 0; j < post.dataValues.likes.length;j++){
+        console.log("=========posstlike",post.dataValues.likes[j])
+        post.dataValues.likes[j].dataValues.user = post.dataValues.likes[j].dataValues.postlike;
+      }
       res.status(200).json({
         post
       })
