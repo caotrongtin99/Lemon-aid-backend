@@ -1,15 +1,14 @@
-const axios = require("axios");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "lemonaid",
+  api_key: "152116876754551",
+  api_secret: "reS9iHJ_B5CgwUias0fFrCo_Wyc",
+});
 
 const upload = async (image) => {
-  const BASE_API = "https://zumi-imgur-api.herokuapp.com/upload";
-
   try {
-    const response = await axios.post(BASE_API, { image });
-    if (response.status !== 200) {
-      return { error: "Error: Can not upload this image!" };
-    }
-
-    return response.data;
+    return await cloudinary.uploader.upload(image);
   } catch (error) {
     return { error: error.message };
   }

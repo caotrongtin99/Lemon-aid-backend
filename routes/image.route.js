@@ -1,22 +1,20 @@
 const router = new require("express").Router();
-const axios = require("axios");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: "lemonaid",
+  api_key: "152116876754551",
+  api_secret: "reS9iHJ_B5CgwUias0fFrCo_Wyc",
+});
 
 router.post("/upload", async (req, res) => {
-  const BASE_API = "https://zumi-imgur-api.herokuapp.com/upload";
-  const { image } = req.body;
-
   try {
-    const response = await axios.post(BASE_API, { image });
+    const { image } = req.body;
+    const result = await cloudinary.uploader.upload(image);
 
-    if (response.status !== 200) {
-      return res
-        .status(400)
-        .send({ error: "Error: Can not upload this image!" });
-    }
-
-    res.send(response.data);
+    res.send(result);
   } catch (error) {
-    return res.status(500).send({ error: error.message });
+    res.status(400).send({ error: error.message });
   }
 });
 
