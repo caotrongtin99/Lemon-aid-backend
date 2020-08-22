@@ -4,6 +4,8 @@ let Follower = models.Follower;
 let PostLike = models.PostLike;
 const saltRounds = 10;
 let bcrypt = require('bcryptjs');
+const { Op } = require("sequelize");
+
 
 exports.getUserByEmail = (email)=>{
   return User.findOne({
@@ -136,7 +138,12 @@ exports.createComment = (comment) => {
 
 exports.deleteComment = (commentId) =>{
   return models.Comment.destroy({
-    where : { id : commentId, parentCommentId : commentId}
+    where : {
+      [Op.or]:[
+        {id: commentId},
+        {parentCommentId: commentId}
+      ]
+    }
   })
 }
 

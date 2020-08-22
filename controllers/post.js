@@ -35,9 +35,13 @@ exports.getAllPosts = (req,res) =>{
 }
 
 exports.getPostsByTabs = (req,res) =>{
-  const {userId,type,limit,page} = req.query;
-  
-  console.log(req.query)
+  let {userId,type,limit,page} = req.query;
+  if (!limit){
+    limit = 4
+  }
+  if (!page){
+    page = 1;
+  }
   getPostsFromFollowings(userId,limit,page)
     .then(async(posts)=>{
       let followingPosts = [];
@@ -192,6 +196,11 @@ exports.getPostById = (req,res)=>{
   const {postid}  = req.params;
   getPostById(postid)
     .then(post=>{
+      if (!post){
+        return res.status(200).json({
+          message: "Post is not exist!!!"
+        })
+      }
       post.dataValues.author = post.dataValues.User;
       post.dataValues.likes = post.dataValues.postlike;
       const user = post.dataValues.postlike.postlike;
