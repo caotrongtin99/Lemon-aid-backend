@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {getAllPosts,createPost,updatePost,removePost, getPostById, createStep, removeStep, getPostsByTabs, searchPosts} = require('../controllers/post');
 const requireLogin = require('../middlewares/requireLogin');
-router.get("/post", getAllPosts);
-// router.get("/post/following", getAllPostsFromFollowings);
+router.get("/post", requireLogin, getAllPosts);
 router.get("/post/getPostsByTabs",requireLogin,getPostsByTabs)
 router.get("/post/getpost/:postid",requireLogin,getPostById);
 router.post("/post/create",requireLogin,createPost);

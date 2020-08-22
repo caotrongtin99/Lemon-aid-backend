@@ -2,9 +2,11 @@ var models = require('../models');
 //const { Model } = require('sequelize/types');
 let Post = models.Post;
 const Sequelize = require('sequelize')
-exports.getPostsByUserId = (userId) =>{
+exports.getPostsByUserId = (userId,limit,page) =>{
   return new Promise((resolve,reject)=>{
     let options = {
+      limit : limit,
+      offset: limit * (page -1),
       where: {
         userId : userId
       },
@@ -28,8 +30,10 @@ exports.getPostsByUserId = (userId) =>{
   })
 }
 
-exports.getAllPosts = () =>{
+exports.getAllPosts = (limit,page) =>{
   return Post.findAll({
+    limit: limit,
+    offset: limit*(page-1),
     where: {},
     include: [
       {
@@ -37,6 +41,7 @@ exports.getAllPosts = () =>{
         as : 'postlike',
         include : [
           {
+            attributes: ['id','username','avatar'],
             model: models.User,
             as : 'postlike'
           }
@@ -46,6 +51,7 @@ exports.getAllPosts = () =>{
         model: models.Step
       },
       {
+        attributes: ['id','username','avatar'],
         model: models.User
       },
       {
@@ -88,6 +94,33 @@ exports.getPostsFromFollowings = (userid,limit,page) =>{
   })
 }
 
+exports.getPostsFromFollowingsWithoutPagination = (userid) =>{
+  return models.Follower.findAll({
+    where: {
+      userId : userid
+    },
+    include : [
+      {
+        model: models.User,
+        as :'follower',
+        include: [
+          {
+            model : models.Post,
+            include: [
+              {
+                attributes: ['id','username','avatar'],
+                model: models.User
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  })
+}
+
+
+
 
 exports.getPostsByUserId = (userid,limit,page) =>{
   return models.Post.findAll({
@@ -105,10 +138,44 @@ exports.getPostsByUserId = (userid,limit,page) =>{
   })
 }
 
+exports.getPostsByUserIdWithoutPagination = (userid) =>{
+  return models.Post.findAll({
+    where: {
+      userId : userid
+    },
+    include: [
+      {
+        attributes: ['id','username','avatar'],
+        model: models.User
+      }
+    ]
+  })
+}
+
 exports.getFavoritePostsByUserId = (userid,limit,page) =>{
   return models.PostLike.findAll({
     limit : limit,
     offset: limit * (page -1),
+    where: {
+      userId : userid
+    },
+    include : [
+      {
+        model : models.Post,
+        as : 'post',
+        include: [
+          {
+            attributes: ['id','username','avatar'],
+            model: models.User
+          }
+        ]
+      },
+    ]
+  })
+}
+
+exports.getFavoritePostsByUserIdWithoutPagination = (userid) =>{
+  return models.PostLike.findAll({
     where: {
       userId : userid
     },
@@ -213,6 +280,8 @@ exports.removeStep = (id) => {
 exports.searchPosts = (query) => {
   return new Promise((resolve,reject)=>{
     let options = {
+      limit: query.limit,
+      offset: query.limit*(query.page - 1),
       where : {
 
       }
@@ -262,7 +331,7 @@ exports.searchPosts = (query) => {
     if (query.sort !== ''){
       if (query.sort == 'latest'){
         options.order = [
-          ['createdAt','DESC']
+          ['createdAt','desc']
         ]
       }
     }

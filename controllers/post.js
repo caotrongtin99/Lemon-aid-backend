@@ -1,8 +1,15 @@
 const _ = require('lodash');
-const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings, getPostsByUserId, getFavoritePostsByUserId, searchPosts, countLikesOfPost} = require('../services/post.service');
+const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings,getPostsFromFollowingsWithoutPagination, getPostsByUserId, getPostsByUserIdWithoutPagination, getFavoritePostsByUserId, getFavoritePostsByUserIdWithoutPagination, searchPosts, countLikesOfPost} = require('../services/post.service');
 const upload = require('../services/image.service');
 exports.getAllPosts = (req,res) =>{
-  getAllPosts()
+  let {limit,page}= req.query;
+  if (!limit){
+    limit = 6
+  }
+  if (!page){
+    page = 1
+  }
+  getAllPosts(limit, page)
     .then(posts=>{
       if (posts){
         for (var i = 0 ; i< posts.length; i++){
@@ -16,8 +23,12 @@ exports.getAllPosts = (req,res) =>{
           posts[i].dataValues.likes = posts[i].dataValues.postlike;
           const user = posts[i].dataValues.postlike.postlike;
           posts[i].dataValues.likes.user = user;
+          for (let z = 0; z < posts[i].dataValues.likes.length; z ++){
+            console.log("=====user")
+            posts[i].dataValues.likes[z].dataValues.user = posts[i].dataValues.likes[z].dataValues.postlike;
+            delete posts[i].dataValues.likes[z].dataValues.postlike;
+          }
           posts[i].dataValues.content = JSON.parse(posts[i].dataValues.content)
-
           delete posts[i].dataValues.User;
           delete posts[i].dataValues.likes.postlike;
           delete posts[i].dataValues.postlike;
@@ -28,8 +39,9 @@ exports.getAllPosts = (req,res) =>{
       }
     })
     .catch(err=>{
+      console.log(err)
       res.status(400).json({
-        err
+        err: err
       })
     })
 }
@@ -42,57 +54,105 @@ exports.getPostsByTabs = (req,res) =>{
   if (!page){
     page = 1;
   }
-  getPostsFromFollowings(userId,limit,page)
-    .then(async(posts)=>{
-      let followingPosts = [];
-      if (posts){
-        for (let i = 0; i < posts.length ; i++){  
-          for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
-            followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
+  if (type === "favorite"){
+    getFavoritePostsByUserId(userId,limit,page)
+      .then(favoritePosts=>{
+        const formatFavoritePosts = favoritePosts.map((post)=>{
+          console.log( post.dataValues.post.dataValues)
+          return post.dataValues.post.dataValues;
+        })
+        getFavoritePostsByUserIdWithoutPagination(userId)
+          .then(allFavoritePosts=>{
+            res.status(200).json({
+              posts: formatFavoritePosts,
+              totalItems: allFavoritePosts.length
+            })
+          })
+      })
+  }else if (type === "following"){
+    getPostsFromFollowings(userId,limit,page)
+      .then(async(posts)=>{
+        let followingPosts = [];
+        if (posts){
+          for (let i = 0; i < posts.length ; i++){  
+            for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
+              followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
+            }
           }
         }
-      }
-      getPostsByUserId(userId,limit,page)
-        .then(myPosts=>{
-          getFavoritePostsByUserId(userId,limit,page)
-            .then(favoritePosts=>{
-              const formatFavoritePosts = favoritePosts.map((post)=>{
-                console.log( post.dataValues.post.dataValues)
-                return post.dataValues.post.dataValues;
-              })
-              if (type === "favorite"){
-                res.status(200).json({
-                  favoritePosts: formatFavoritePosts,
-                  numberMyPosts: myPosts.length,
-                  numberOfFollowingPosts: followingPosts.length,
-                  numberFavoritePosts: favoritePosts.length
-                })
-              } else if (type === "following"){
-                res.status(200).json({
-                  followingPosts,
-                  numberMyPosts: myPosts.length,
-                  numberOfFollowingPosts: followingPosts.length,
-                  numberFavoritePosts: favoritePosts.length
-                })
-              } else {
-                res.status(200).json({
-                  myPosts,
-                  numberMyPosts: myPosts.length,
-                  numberOfFollowingPosts: followingPosts.length,
-                  numberFavoritePosts: favoritePosts.length
-                })
-              }
-
-            })
+        getPostsFromFollowingsWithoutPagination(userId)
+        .then(allFollowingPosts=>{
+          res.status(200).json({
+            posts: followingPosts,
+            totalItems: allFollowingPosts.length
+          })    
         })
-    })
-    .catch(err=>{
-      console.log(err);
-      
-      res.status(400).json({
-        err
+      })  
+  } else {
+    getPostsByUserId(userId,limit,page)
+      .then(myPosts=>{
+        getPostsByUserIdWithoutPagination(userId)
+          .then(allMyPosts=>{
+            res.status(200).json({
+              posts: myPosts,
+              totalItems: allMyPosts.length
+            }) 
+          })
       })
-    })
+  }
+  // getPostsFromFollowings(userId,limit,page)
+  //   .then(async(posts)=>{
+  //     let followingPosts = [];
+  //     if (posts){
+  //       for (let i = 0; i < posts.length ; i++){  
+  //         for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
+  //           followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
+  //         }
+  //       }
+  //     }
+  //     getPostsByUserId(userId,limit,page)
+  //       .then(myPosts=>{
+  //         getFavoritePostsByUserId(userId,limit,page)
+  //           .then(favoritePosts=>{
+  //             const formatFavoritePosts = favoritePosts.map((post)=>{
+  //               console.log( post.dataValues.post.dataValues)
+  //               return post.dataValues.post.dataValues;
+  //             })
+  //             if (type === "favorite"){
+  //               getFavoritePostsByUserIdWithoutPagination(userId)
+  //                 .then(allFavoritePosts=>{
+  //                   res.status(200).json({
+  //                     posts: formatFavoritePosts,
+  //                     totalItems: allFavoritePosts.length
+  //                   })
+  //                 })
+  //             } else if (type === "following"){
+  //               getPostsFromFollowingsWithoutPagination(userId)
+  //                 .then(allFollowingPosts=>{
+  //                   res.status(200).json({
+  //                     posts: followingPosts,
+  //                     totalItems: allFollowingPosts.length
+  //                   })    
+  //                 })
+  //             } else {
+  //               res.status(200).json({
+  //                 myPosts,
+  //                 numberMyPosts: myPosts.length,
+  //                 numberOfFollowingPosts: followingPosts.length,
+  //                 numberFavoritePosts: favoritePosts.length
+  //               })
+  //             }
+
+  //           })
+  //       })
+  //   })
+  //   .catch(err=>{
+  //     console.log(err);
+      
+  //     res.status(400).json({
+  //       err
+  //     })
+  //   })
 }
 
 exports.createPost = async (req,res) => {
@@ -267,6 +327,7 @@ exports.removeStep = (req,res) => {
 }
 
 exports.searchPosts = (req,res) => {
+  
   if (req.query.duration == null){
     req.query.duration = ''
   }
@@ -278,6 +339,12 @@ exports.searchPosts = (req,res) => {
   }
   if (req.query.search == null){
     req.query.search = ''
+  }
+  if (!req.query.limit){
+    req.query.limit = 4
+  }
+  if (!req.query.page){
+    req.query.page = 1
   }
   const request = req.query;
   searchPosts(request)
