@@ -72,21 +72,20 @@ exports.getPostsByTabs = (req,res) =>{
           })
       })
   }else if (type === "following"){
-    console.log("===============vao folowing");
     getPostsFromFollowings(userId,limit,page)
       .then((posts)=>{
-        console.log("=========POSTS======",posts)
         let followingPosts = [];
         if (posts){
-          for (let i = 0; i < posts.length ; i++){  
+          for (let i = 0; i < posts.length ; i++){
+            console.log("===========post=========",posts[i].dataValues.follower.dataValues.Posts);
             for (let j = 0; j < posts[i].dataValues.follower.dataValues.Posts.length ; j++){
-              followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[i])
+              console.log("push pos==============",)
+              followingPosts.push(posts[i].dataValues.follower.dataValues.Posts[j])
             }
           }
         }
-        console.log("===========following post",JSON.stringify(followingPosts))
+        console.log("==============foloowing posts==========",followingPosts)
         followingPosts = followingPosts.map((post)=>{
-          console.log("=========post new==========",post.dataValues)
           if (post.dataValues.postlike){
           post.dataValues.numberOfLikes = post.dataValues.postlike.length;
           delete post.dataValues.postlike;
