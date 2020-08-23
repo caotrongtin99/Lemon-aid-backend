@@ -16,10 +16,8 @@ exports.getPostsByUserId = (userId,limit,page) =>{
           as : 'postlike'
         },
         {
+          attributes: ['id','username','avatar'],
           model: models.User
-        },
-        {
-          model: models.Comment
         }
       ]
     }
@@ -69,8 +67,6 @@ exports.getAllPosts = (limit,page) =>{
 
 exports.getPostsFromFollowings = (userid,limit,page) =>{
   return models.Follower.findAll({
-    limit : limit,
-    offset: limit * (page -1),
     where: {
       userId : userid
     },
@@ -80,11 +76,18 @@ exports.getPostsFromFollowings = (userid,limit,page) =>{
         as :'follower',
         include: [
           {
+            limit : limit,
+            offset: limit * (page -1),
             model : models.Post,
             include: [
               {
                 attributes: ['id','username','avatar'],
                 model: models.User
+              },
+              {
+                attributes: ['id'],
+                model : models.PostLike,
+                as : 'postlike'
               }
             ]
           }
@@ -122,21 +125,21 @@ exports.getPostsFromFollowingsWithoutPagination = (userid) =>{
 
 
 
-exports.getPostsByUserId = (userid,limit,page) =>{
-  return models.Post.findAll({
-    limit : limit,
-    offset: limit * (page -1),
-    where: {
-      userId : userid
-    },
-    include: [
-      {
-        attributes: ['id','username','avatar'],
-        model: models.User
-      }
-    ]
-  })
-}
+// exports.getPostsByUserId = (userid,limit,page) =>{
+//   return models.Post.findAll({
+//     limit : limit,
+//     offset: limit * (page -1),
+//     where: {
+//       userId : userid
+//     },
+//     include: [
+//       {
+//         attributes: ['id','username','avatar'],
+//         model: models.User
+//       }
+//     ]
+//   })
+// }
 
 exports.getPostsByUserIdWithoutPagination = (userid) =>{
   return models.Post.findAll({
@@ -167,6 +170,11 @@ exports.getFavoritePostsByUserId = (userid,limit,page) =>{
           {
             attributes: ['id','username','avatar'],
             model: models.User
+          },
+          {
+            attributes: ['id'],
+            model : models.PostLike,
+            as : 'postlike'
           }
         ]
       },

@@ -58,7 +58,9 @@ exports.getPostsByTabs = (req,res) =>{
     getFavoritePostsByUserId(userId,limit,page)
       .then(favoritePosts=>{
         const formatFavoritePosts = favoritePosts.map((post)=>{
-          console.log( post.dataValues.post.dataValues)
+          console.log("=========post==========",post)
+          post.dataValues.post.dataValues.numberOfLikes = post.dataValues.post.dataValues.postlike.length;
+          delete post.dataValues.post.dataValues.postlike;
           return post.dataValues.post.dataValues;
         })
         getFavoritePostsByUserIdWithoutPagination(userId)
@@ -70,8 +72,10 @@ exports.getPostsByTabs = (req,res) =>{
           })
       })
   }else if (type === "following"){
+    console.log("===============vao folowing");
     getPostsFromFollowings(userId,limit,page)
-      .then(async(posts)=>{
+      .then((posts)=>{
+        console.log("=========POSTS======",posts)
         let followingPosts = [];
         if (posts){
           for (let i = 0; i < posts.length ; i++){  
@@ -80,17 +84,39 @@ exports.getPostsByTabs = (req,res) =>{
             }
           }
         }
+        console.log("===========following post",JSON.stringify(followingPosts))
+        followingPosts = followingPosts.map((post)=>{
+          console.log("=========post new==========",post.dataValues)
+          if (post.dataValues.postlike){
+          post.dataValues.numberOfLikes = post.dataValues.postlike.length;
+          delete post.dataValues.postlike;
+          }
+          return post;
+        })
         getPostsFromFollowingsWithoutPagination(userId)
         .then(allFollowingPosts=>{
+          let allPosts = [];
+          if (allFollowingPosts){
+            for (let i = 0; i < allFollowingPosts.length ; i++){  
+              for (let j = 0; j < allFollowingPosts[i].dataValues.follower.dataValues.Posts.length ; j++){
+                allPosts.push(allFollowingPosts[i].dataValues.follower.dataValues.Posts[i])
+              }
+            }
+          }
           res.status(200).json({
             posts: followingPosts,
-            totalItems: allFollowingPosts.length
+            totalItems: allPosts.length
           })    
         })
       })  
   } else {
     getPostsByUserId(userId,limit,page)
       .then(myPosts=>{
+        myPosts = myPosts.map(post=>{
+          post.dataValues.numberOfLikes = post.dataValues.postlike.length;
+          delete post.dataValues.postlike;
+          return post;
+        })
         getPostsByUserIdWithoutPagination(userId)
           .then(allMyPosts=>{
             res.status(200).json({
