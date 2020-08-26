@@ -7,7 +7,7 @@ router.get("/post/getPostsByTabs",requireLogin, getPostsByTabs)
 router.get("/post/getpost/:postid",requireLogin,getPostById);
 router.post("/post/create",requireLogin, createPost);
 router.post("/post/remove",requireLogin,removePost);
-router.put("/post/update/:postid",requireLogin,updatePost);
+router.put("/post/update/:postid",updatePost);
 router.post("/step/create",createStep);
 router.post("/step/remove",removeStep);
 router.get("/post/search",searchPosts);

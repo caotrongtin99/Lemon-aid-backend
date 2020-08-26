@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const {getInfoUser, follow,unfollow,likePost,unlikePost, getFavoritePosts,getNotifications, createComment,deleteComment, getActivityHistory, updateUserInfo} = require('../controllers/user');
 const requireLogin = require('../middlewares/requireLogin');
-router.get("/:username",requireLogin, getInfoUser);
+router.get("/:username", getInfoUser);
 router.put("/update/:userid",requireLogin,updateUserInfo);
 router.post("/follow",requireLogin, follow);
 router.post("/unfollow",requireLogin,unfollow);

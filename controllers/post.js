@@ -223,7 +223,7 @@ exports.updatePost = async (req, res) => {
     const newSteps = await Promise.all(postData.steps.map(async (step) => {
       if (step.image) {
         const response = await upload(step.image);
-        step.image = response.data.link;
+        step.image = response.secure_url;
       }
       return step;
     }))

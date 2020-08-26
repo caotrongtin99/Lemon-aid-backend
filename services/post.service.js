@@ -342,6 +342,21 @@ exports.searchPosts = (query) => {
           ['createdAt','desc']
         ]
       }
+      else {
+        models.PostLike.findAll({
+          group:['postId','post.id'],
+          attributes: ['postId',[Sequelize.fn('COUNT','userId'),'count']],
+          order: [[Sequelize.literal('count'),'DESC']],
+          include: [
+            {
+              model: models.Post,
+              as: 'post'
+            }
+          ]
+        }).then(data=>{
+          console.log("==================data=========",data);
+        })
+      }
     }
 
     models.Post

@@ -48,16 +48,18 @@ exports.getInfoUser = (req, res) => {
 };
 
 exports.updateUserInfo = async (req, res) => {
-  const { userId } = req.params;
+  const { userid } = req.params;
+  console.log("=================userId============",userid)
   const userData = {
     ...req.body,
   };
   if (userData.avatar) {
     const response = await upload(userData.avatar);
-    userData.avatar = response.data.secure_url;
+    console.log("============response==========",response)
+    userData.avatar = response.secure_url;
   }
 
-  updateUserInfo(userData, userId)
+  updateUserInfo(userData, userid)
     .then((response) => {
       console.log("response", response);
       res.status(200).json({
