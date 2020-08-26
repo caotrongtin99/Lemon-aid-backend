@@ -1,4 +1,6 @@
 var models = require('../models');
+const querystring = require('querystring');
+ 
 //const { Model } = require('sequelize/types');
 let Post = models.Post;
 const Sequelize = require('sequelize')
@@ -286,13 +288,135 @@ exports.removeStep = (id) => {
 }
 
 exports.searchPosts = (query) => {
+  if (query.sort==="common"){
+    let whereClauses = {};
+    let categories = [];
+    whereClauses.title = {[Sequelize.Op.iLike]: `%${query.search}%`};
+    if (query.level !== ''){
+      if (query.level.length===3){
+        whereClauses={ 
+          [Sequelize.Op.or] : [
+          {difficultLevel : 1},
+          {difficultLevel : 2},
+        ]}
+      }
+      else if (query.level.length === 2){
+        if (query.level.includes('easy') && query.level.includes('normal')){
+          whereClauses={ 
+            [Sequelize.Op.or] : [
+            {difficultLevel : 1},
+            {difficultLevel : 2},
+          ]}
+        } else if (query.level.includes('easy') && query.level.includes('hard')){
+          whereClauses={ 
+            [Sequelize.Op.or] : [
+            {difficultLevel : 1},
+            {difficultLevel : 3},
+          ]}
+        } else if (query.level.includes('normal') && query.level.includes('hard')){
+          whereClauses={ 
+            [Sequelize.Op.or] : [
+            {difficultLevel : 2},
+            {difficultLevel : 3},
+          ]}
+        }
+      } else {
+        if (query.level === "easy"){
+          whereClauses.difficultLevel = 1;
+        } else if (query.level === "normal"){
+          whereClauses.difficultLevel = 2;
+        } else if (query.level === "hard"){
+          whereClauses.difficultLevel = 3;
+        }
+      }
+    }
+    if (query.category.includes('vietfood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Việt%`}})
+    }
+    if (query.category.includes('thaifood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Thái%`}})
+    }
+    if (query.category.includes('koreafood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}})
+    }
+    if (query.category.includes('chinafood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Trung%`}})
+    }
+    if (query.category.includes('eurofood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Âu%`}})
+    }
+    if (query.category.includes('drink')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}})
+    }
+    if (query.category.includes('dessert')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}})
+    }
+    console.log("============categories=====",categories)
+    whereClauses = {
+      [Sequelize.Op.or]: categories
+    }
+    whereClauses.cookingTime = {
+        [Sequelize.Op.between]:[query.mintime,query.maxtime]
+    }
+
+    
+    return new Promise((resolve,reject)=>{
+      models.PostLike.findAll({
+        group:['postId','post.id','post->User.id'],
+        attributes: ['postId',[Sequelize.fn('COUNT','userId'),'count']],
+        order: [[Sequelize.literal('count'),'DESC']],
+        include: [
+          {
+            model: models.Post,
+            as: 'post',
+            where : whereClauses,
+            include: [
+              {
+                attributes:['id','username','avatar'],
+                model: models.User
+              }
+            ]
+          }
+        ]
+      })
+      
+    .then(data=>{
+      console.log("================data=====",data)
+      const formatData = data.map(e=>{
+        e.dataValues.post.dataValues.numberOfLikes = e.dataValues.count;
+        return e.dataValues.post.dataValues;
+      })
+      console.log("===========format data======",formatData)
+      return resolve(formatData)
+    })
+    .catch(err => reject(new Error(err)))
+    })
+  }
   return new Promise((resolve,reject)=>{
     let options = {
       limit: query.limit,
       offset: query.limit*(query.page - 1),
       where : {
 
-      }
+      },
+      include: [
+        {
+          attributes:['id'],
+          model : models.PostLike,
+          as : 'postlike',
+          include : [
+            {
+              attributes:['id','username','avatar'],
+              model: models.User,
+              as : 'postlike'
+            }
+          ]
+        },
+        {
+          attributes:['id','username','avatar'],
+          model: models.User
+        }
+      ]
     }
 
     if (query.search !== ''){
@@ -302,38 +426,73 @@ exports.searchPosts = (query) => {
         }
       }
     }
-
     if (query.level !== ''){
-      switch (query.level){
-				case 'easy': 
-					options.where = {
+      if (query.level.length===3){
+        options.where={ 
+          [Sequelize.Op.or] : [
+          {difficultLevel : 1},
+          {difficultLevel : 2},
+        ]}
+      }
+      else if (query.level.length === 2){
+        if (query.level.includes('easy') && query.level.includes('normal')){
+          options.where={ 
             [Sequelize.Op.or] : [
-              {difficultLevel : 1},
-              {difficultLevel : 2},
-              {difficultLevel : 3},
-            ]
-          }
-					break;
-				case 'normal':
-          options.where = {
+            {difficultLevel : 1},
+            {difficultLevel : 2},
+          ]}
+        } else if (query.level.includes('easy') && query.level.includes('hard')){
+          options.where={ 
             [Sequelize.Op.or] : [
-              {difficultLevel : 4},
-              {difficultLevel : 5},
-              {difficultLevel : 6},
-              {difficultLevel : 7},
-            ]
-          }
-					break;
-				default:
-          options.where = {
+            {difficultLevel : 1},
+            {difficultLevel : 3},
+          ]}
+        } else if (query.level.includes('normal') && query.level.includes('hard')){
+          options.where={ 
             [Sequelize.Op.or] : [
-              {difficultLevel : 8},
-              {difficultLevel : 9},
-              {difficultLevel : 10},
-            ]
-          }
-		
-			}
+            {difficultLevel : 2},
+            {difficultLevel : 3},
+          ]}
+        }
+      } else {
+        if (query.level === "easy"){
+          options.where.difficultLevel = 1;
+        } else if (query.level === "normal"){
+          options.where.difficultLevel = 2;
+        } else if (query.level === "hard"){
+          options.where.difficultLevel = 3;
+        }
+      }
+    }
+    options.where = {
+      cookingTime: {
+        [Sequelize.Op.between]:[query.mintime,query.maxtime]
+      }
+    }
+    let categories = [];
+    if (query.category.includes('vietfood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Việt%`}})
+    }
+    if (query.category.includes('thaifood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Thái%`}})
+    }
+    if (query.category.includes('koreafood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}})
+    }
+    if (query.category.includes('chinafood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Trung%`}})
+    }
+    if (query.category.includes('eurofood')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Âu%`}})
+    }
+    if (query.category.includes('drink')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}})
+    }
+    if (query.category.includes('dessert')){
+      categories.push({categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}})
+    }
+    options.where = {
+      [Sequelize.Op.or]: categories
     }
 
     if (query.sort !== ''){
@@ -342,26 +501,19 @@ exports.searchPosts = (query) => {
           ['createdAt','desc']
         ]
       }
-      else {
-        models.PostLike.findAll({
-          group:['postId','post.id'],
-          attributes: ['postId',[Sequelize.fn('COUNT','userId'),'count']],
-          order: [[Sequelize.literal('count'),'DESC']],
-          include: [
-            {
-              model: models.Post,
-              as: 'post'
-            }
-          ]
-        }).then(data=>{
-          console.log("==================data=========",data);
-        })
-      }
     }
 
     models.Post
-      .findAndCountAll(options)
-      .then(data=>resolve(data))
+      .findAll(options)
+      .then(data=>{
+        console.log("======================data===============",data)
+        const formatData = data.map(element=>{
+          element.dataValues.numberOfLikes = element.dataValues.postlike.length;
+          delete element.dataValues.postlike;
+          return element.dataValues;
+        })
+        resolve(formatData)
+      })
       .catch(err => reject(new Error(err)))
   })
 }

@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings,getPostsFromFollowingsWithoutPagination, getPostsByUserId, getPostsByUserIdWithoutPagination, getFavoritePostsByUserId, getFavoritePostsByUserIdWithoutPagination, searchPosts, countLikesOfPost} = require('../services/post.service');
 const upload = require('../services/image.service');
+const querystring = require('querystring');
+
 exports.getAllPosts = (req,res) =>{
   let {limit,page}= req.query;
   if (!limit){
@@ -352,9 +354,11 @@ exports.removeStep = (req,res) => {
 }
 
 exports.searchPosts = (req,res) => {
-  
-  if (req.query.duration == null){
-    req.query.duration = ''
+  if (req.query.mintime == null){
+    req.query.mintime = 0
+  }
+  if (req.query.maxtime == null){
+    req.query.maxtime = 100;
   }
   if (req.query.level == null){
     req.query.level = ''
@@ -364,6 +368,10 @@ exports.searchPosts = (req,res) => {
   }
   if (req.query.search == null){
     req.query.search = ''
+  }
+
+  if (req.query.category == null){
+    req.query.category = ''
   }
   if (!req.query.limit){
     req.query.limit = 4
