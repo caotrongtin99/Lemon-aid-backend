@@ -1,16 +1,10 @@
 const router = new require("express").Router();
-const cloudinary = require("cloudinary").v2;
-
-cloudinary.config({
-  cloud_name: "lemonaid",
-  api_key: "152116876754551",
-  api_secret: "reS9iHJ_B5CgwUias0fFrCo_Wyc",
-});
+const upload = require("../services/image.service");
 
 router.post("/upload", async (req, res) => {
   try {
     const { image } = req.body;
-    const result = await cloudinary.uploader.upload(image);
+    const result = await upload(image);
 
     res.send(result);
   } catch (error) {

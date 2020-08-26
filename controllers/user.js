@@ -1,200 +1,210 @@
-const {getUserByUsername, getFollowersOfUserByUserId, createFollow, removeFollow, likePost, unlikePost, getFavoritePosts,createComment, deleteComment, getActivityHistory, updateUserInfo}= require('../services/user.service')
-const {getPostsByUserId} = require('../services/post.service');
-const { Result } = require('express-validator');
-const upload = require('../services/image.service');
-const { getNotificationsOfUser, createNotification } = require('../services/notification.service');
+const {
+  getUserByUsername,
+  getFollowersOfUserByUserId,
+  createFollow,
+  removeFollow,
+  likePost,
+  unlikePost,
+  getFavoritePosts,
+  createComment,
+  deleteComment,
+  getActivityHistory,
+  updateUserInfo,
+} = require("../services/user.service");
+const { getPostsByUserId } = require("../services/post.service");
+const { Result } = require("express-validator");
+const upload = require("../services/image.service");
+const {
+  getNotificationsOfUser,
+  createNotification,
+} = require("../services/notification.service");
 //const { delete } = require('../routes/auth.route');
-exports.getInfoUser = (req,res) =>{
+exports.getInfoUser = (req, res) => {
   const username = req.params.username;
-  getUserByUsername(username)
-    .then(user=>{
-      let userData = user.dataValues;
-      userData.followings = userData.follower;
-      userData.likedPosts = userData.postlike;
-      delete userData.follower;
-      delete userData.postlike;
-      for (let j = 0; j < userData.followings.length ;j ++){
-        userData.followings[j].dataValues.user = userData.followings[j].dataValues.follower;
-        delete userData.followings[j].dataValues.follower;
-      }
+  getUserByUsername(username).then((user) => {
+    let userData = user.dataValues;
+    userData.followings = userData.follower;
+    userData.likedPosts = userData.postlike;
+    delete userData.follower;
+    delete userData.postlike;
+    for (let j = 0; j < userData.followings.length; j++) {
+      userData.followings[j].dataValues.user =
+        userData.followings[j].dataValues.follower;
+      delete userData.followings[j].dataValues.follower;
+    }
 
-      if (!user) {
-        return res.status(400).json({
-          message : "User does not exist!!!"
-        })
-      }
-      getFollowersOfUserByUserId(userData.id)
-        .then(followers=>{
-          userData.followers = followers;
-          return res.status(200).json({
-            userData
-          })
-        })
-    })
-}
-
-exports.updateUserInfo = async (req,res) =>{
-  const {userid} = req.params;
-  const userData = {
-    ...req.body
-  }
-  if (userData.avatar){
-    const response = await upload(userData.avatar);
-    userData.avatar = response.data.link;
-  }
-
-  updateUserInfo(userData,userid)
-    .then(response=>{
-      console.log("response",response)
-      res.status(200).json({
-        message : "Update successfully!"
-      })
-    })
-    .catch(err=>{
-      console.log("err",err)
-      res.status(400).json({
-        err : err
-      })
-    })
-  
-}
-
-exports.follow = (req,res) =>{
-  const {userId, followerId} = req.body;
-  createFollow(userId, followerId) 
-    .then(result=>{
-      const notification = {
-        senderId : userId,
-        receiverId : followerId,
-        follow: result.id
-      }
-      createNotification(notification)
-        .then(success=>{
-          res.status(200).json({
-            message: "Follow and create notification successfully!!"
-          });
-        })
-    })
-    .catch(err=>{
-      res.status(400).json({
-        err : err
-      })
-    })
-}
-
-exports.unfollow = (req,res) =>{
-  const {userId, followerId} = req.body;
-  removeFollow(userId, followerId) 
-    .then(result=>{
-      res.status(200).json({
-        message: "Unfollow successfully!!"
+    if (!user) {
+      return res.status(400).json({
+        message: "User does not exist!!!",
       });
-    })
-    .catch(err=>{
-      res.status(400).json({
-        err : err
-      })
-    })
-}
-
-exports.likePost = (req,res) =>{
-  const {userId, postId} = req.body;
-  likePost(userId,postId)
-  .then(result=>{
-    res.status(200).json({
-      message: "Liked this post!!"
+    }
+    getFollowersOfUserByUserId(userData.id).then((followers) => {
+      userData.followers = followers;
+      return res.status(200).json({
+        userData,
+      });
     });
-  })
-  .catch(err=>{
-    res.status(400).json({
-      err : err
-    })
-  })
-}
+  });
+};
 
-exports.unlikePost = (req,res) =>{
-  const {userId, postId} = req.body;
-  unlikePost(userId, postId) 
-    .then(result=>{
+exports.updateUserInfo = async (req, res) => {
+  const { userId } = req.params;
+  const userData = {
+    ...req.body,
+  };
+  if (userData.avatar) {
+    const response = await upload(userData.avatar);
+    userData.avatar = response.data.secure_url;
+  }
+
+  updateUserInfo(userData, userId)
+    .then((response) => {
+      console.log("response", response);
       res.status(200).json({
-        message: "Unliked this post!!"
+        message: "Update successfully!",
       });
     })
-    .catch(err=>{
+    .catch((err) => {
+      console.log("err", err);
       res.status(400).json({
-        err : err
-      })
-    })
-}
+        err: err,
+      });
+    });
+};
 
-exports.getFavoritePosts = (req, res) =>{
-  const {userId} = req.params;
-  getFavoritePosts(userId)
-    .then(posts=>{
+exports.follow = (req, res) => {
+  const { userId, followerId } = req.body;
+  createFollow(userId, followerId)
+    .then((result) => {
+      const notification = {
+        senderId: userId,
+        receiverId: followerId,
+        follow: result.id,
+      };
+      createNotification(notification).then((success) => {
+        res.status(200).json({
+          message: "Follow and create notification successfully!!",
+        });
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err: err,
+      });
+    });
+};
+
+exports.unfollow = (req, res) => {
+  const { userId, followerId } = req.body;
+  removeFollow(userId, followerId)
+    .then((result) => {
       res.status(200).json({
-        posts
-      })
+        message: "Unfollow successfully!!",
+      });
     })
-    .then(err=>{
-      err
-    })
-}
+    .catch((err) => {
+      res.status(400).json({
+        err: err,
+      });
+    });
+};
 
-exports.createComment = (req, res) =>{
-  const {message,userId, postId, parentCommentId}  = req.body;
+exports.likePost = (req, res) => {
+  const { userId, postId } = req.body;
+  likePost(userId, postId)
+    .then((result) => {
+      res.status(200).json({
+        message: "Liked this post!!",
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err: err,
+      });
+    });
+};
+
+exports.unlikePost = (req, res) => {
+  const { userId, postId } = req.body;
+  unlikePost(userId, postId)
+    .then((result) => {
+      res.status(200).json({
+        message: "Unliked this post!!",
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({
+        err: err,
+      });
+    });
+};
+
+exports.getFavoritePosts = (req, res) => {
+  const { userId } = req.params;
+  getFavoritePosts(userId)
+    .then((posts) => {
+      res.status(200).json({
+        posts,
+      });
+    })
+    .then((err) => {
+      err;
+    });
+};
+
+exports.createComment = (req, res) => {
+  const { message, userId, postId, parentCommentId } = req.body;
   const comment = {
     message,
     userId,
     postId,
-    parentCommentId
-  }
+    parentCommentId,
+  };
   createComment(comment)
-    .then(comment=>{
+    .then((comment) => {
       res.status(200).json({
-        message : "Comment successfully"
-      })
+        message: "Comment successfully",
+      });
     })
-    .catch(err=>{
+    .catch((err) => {
       res.status(400).json({
-        err
-      })
-    })
-}
+        err,
+      });
+    });
+};
 
-exports.deleteComment = (req,res)=>{
+exports.deleteComment = (req, res) => {
   deleteComment(req.body.commentId)
-    .then(result=>{
+    .then((result) => {
       res.status(200).json({
-        message: "Delete successfully"
-      })
+        message: "Delete successfully",
+      });
     })
-    .catch(err=>{
+    .catch((err) => {
       res.status(400).json({
-        err
-      })
-    })
-}
+        err,
+      });
+    });
+};
 
-exports.getActivityHistory = (req,res) => {
-  getActivityHistory(req.params.userId)
-    .then(activity=>{
-      res.status(200).json({
-        activity
-      })
-    })
-}
+exports.getActivityHistory = (req, res) => {
+  getActivityHistory(req.params.userId).then((activity) => {
+    res.status(200).json({
+      activity,
+    });
+  });
+};
 
-exports.getNotifications = (req,res) =>{
-  console.log("==============VAO DAY CHU============")
-  const {userId} = req.params;
+exports.getNotifications = (req, res) => {
+  console.log("==============VAO DAY CHU============");
+  const { userId } = req.params;
   getNotificationsOfUser(userId)
-    .then(notifications=>{
+    .then((notifications) => {
       res.status(200).json({
-        notifications
-      })
+        notifications,
+      });
     })
-    .catch(err=>{
-      console.log(err)
-    })
-}
-
+    .catch((err) => {
+      console.log(err);
+    });
+};
