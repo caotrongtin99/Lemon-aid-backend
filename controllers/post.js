@@ -186,12 +186,12 @@ exports.createPost = async (req,res) => {
   const {title, description,steps, difficultLevel, hashtags, userId, categories, ingredients, ration, cookingTime} = req.body;
   let {avatar} = req.body;
   const featuredImage = await upload(avatar);
-  avatar = _.get(featuredImage,'data.link');
+  avatar = _.get(featuredImage,'secure_url');
   const newSteps = await Promise.all(steps.map(async (step) => {
     if (step.image) {
       const response = await upload(step.image);
       console.log(response)
-      step.image = response.data.link;
+      step.image = response.secure_url;
     }
     return step;
   }))
