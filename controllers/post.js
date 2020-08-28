@@ -374,7 +374,7 @@ exports.searchPosts = (req,res) => {
     req.query.category = ''
   }
   if (!req.query.limit){
-    req.query.limit = 4
+    req.query.limit = 20
   }
   if (!req.query.page){
     req.query.page = 1
