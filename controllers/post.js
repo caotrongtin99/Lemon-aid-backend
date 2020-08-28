@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings,getPostsFromFollowingsWithoutPagination, getPostsByUserId, getPostsByUserIdWithoutPagination, getFavoritePostsByUserId, getFavoritePostsByUserIdWithoutPagination, searchPosts, countLikesOfPost} = require('../services/post.service');
+const {getAllPosts, createPost, updatePost, removePost, getPostById, createStep, removeStep, getPostsFromFollowings,getPostsFromFollowingsWithoutPagination, getPostsByUserId, getPostsByUserIdWithoutPagination, getFavoritePostsByUserId, getFavoritePostsByUserIdWithoutPagination, searchPosts, countLikesOfPost, searchPostsWithoutPagination} = require('../services/post.service');
 const upload = require('../services/image.service');
 const querystring = require('querystring');
 
@@ -380,11 +380,24 @@ exports.searchPosts = (req,res) => {
     req.query.page = 1
   }
   const request = req.query;
+  const requestWithoutPaging = {
+    mintime : req.query.mintime,
+    maxtime : req.query.maxtime,
+    level : req.query.level,
+    search : req.query.search,
+    category : req.query.category,
+    sort: req.query.sort
+  }
   searchPosts(request)
     .then(data=>{
-      res.status(200).json({
-        posts : data
-      })
+      console.log("===========data  paging========",data);
+      searchPostsWithoutPagination(requestWithoutPaging)
+        .then(allPosts=>{
+          res.status(200).json({
+            posts : data,
+            numberOfPosts: allPosts.length
+          })
+        })
     })
     .catch(err=>{
       console.log(err)
