@@ -6,7 +6,7 @@ const querystring = require('querystring');
 exports.getAllPosts = (req,res) =>{
   let {limit,page}= req.query;
   if (!limit){
-    limit = 6
+    limit = 20
   }
   if (!page){
     page = 1
