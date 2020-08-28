@@ -354,11 +354,12 @@ exports.removeStep = (req,res) => {
 }
 
 exports.searchPosts = (req,res) => {
+  console.log("==============req.query",req.query)
   if (req.query.mintime == null){
     req.query.mintime = 0
   }
   if (req.query.maxtime == null){
-    req.query.maxtime = 100;
+    req.query.maxtime = 1000;
   }
   if (req.query.level == null){
     req.query.level = ''
@@ -388,6 +389,7 @@ exports.searchPosts = (req,res) => {
     category : req.query.category,
     sort: req.query.sort
   }
+  console.log("================request============",request)
   searchPosts(request)
     .then(data=>{
       console.log("===========data  paging========",data);

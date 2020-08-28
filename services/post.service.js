@@ -492,49 +492,49 @@ exports.searchPostsWithoutPagination = (query) => {
         }
       }
     }
-    options.where = {
-      cookingTime: {
+    options.where.cookingTime = {
         [Sequelize.Op.between]:[query.mintime,query.maxtime]
-      }
     }
     let categories = [];
     if (query.category.includes('vietfood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Việt%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Việt%`})
     }
     if (query.category.includes('thaifood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Thái%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Thái%`})
     }
     if (query.category.includes('koreafood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Hàn%`})
     }
     if (query.category.includes('chinafood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Trung%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
     }
     if (query.category.includes('eurofood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Âu%`}})
+      categories.push({[Sequelize.Op.iLike] : `%Món Âu%`})
     }
     if (query.category.includes('drink')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Đồ uống%`})
     }
     if (query.category.includes('dessert')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}})
+      categories.push({[Sequelize.Op.iLike] : `%Tráng miệng%`})
     }
     if (query.category===''){
       categories=[
-        {categories: { [Sequelize.Op.iLike] : `%Món Việt%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Thái%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Trung%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Âu%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Nhật%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}}
+        { [Sequelize.Op.iLike] : `%Món Việt%`},
+        { [Sequelize.Op.iLike] : `%Món Thái%`},
+        { [Sequelize.Op.iLike] : `%Món Hàn%`},
+        { [Sequelize.Op.iLike] : `%Món Trung%`},
+        { [Sequelize.Op.iLike] : `%Món Âu%`},
+        { [Sequelize.Op.iLike] : `%Món Nhật%`},
+        { [Sequelize.Op.iLike] : `%Đồ uống%`},
+        { [Sequelize.Op.iLike] : `%Tráng miệng%`}
       ]
     }
-    options.where = {
+    options.where.categories = {
       [Sequelize.Op.or]: categories
     }
-
+    options.where.title = {
+        [Sequelize.Op.iLike] : `%${query.search}%`
+    }
     if (query.sort !== ''){
       if (query.sort == 'latest'){
         options.order = [
@@ -543,10 +543,10 @@ exports.searchPostsWithoutPagination = (query) => {
       }
     }
 
+
     models.Post
       .findAll(options)
       .then(data=>{
-        console.log("======================data latest===============",data)
         const formatData = data.map(element=>{
           element.dataValues.numberOfLikes = element.dataValues.postlike.length;
           delete element.dataValues.postlike;
@@ -560,7 +560,6 @@ exports.searchPostsWithoutPagination = (query) => {
 
 
 exports.searchPosts = (query) => {
-  console.log("============query-------",query)
   if (query.sort==="common"){
     let whereClauses = {};
     let categories = [];
@@ -612,42 +611,42 @@ exports.searchPosts = (query) => {
       }
     }
     if (query.category.includes('vietfood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Việt%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Việt%`})
     }
     if (query.category.includes('thaifood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Thái%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Thái%`})
     }
     if (query.category.includes('koreafood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Hàn%`})
     }
     if (query.category.includes('chinafood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Trung%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
     }
     if (query.category.includes('japanfood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Nhật%`}})
+      categories.push({[Sequelize.Op.iLike] : `%Món Nhật%`})
     }
     if (query.category.includes('eurofood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Âu%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Âu%`})
     }
     if (query.category.includes('drink')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Đồ uống%`})
     }
     if (query.category.includes('dessert')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}})
+      categories.push({[Sequelize.Op.iLike] : `%Tráng miệng%`})
     }
     if (query.category===''){
       categories=[
-        {categories: { [Sequelize.Op.iLike] : `%Món Việt%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Thái%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Trung%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Âu%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Nhật%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}}
+        {[Sequelize.Op.iLike] : `%Món Việt%`},
+        {[Sequelize.Op.iLike] : `%Món Thái%`},
+        { [Sequelize.Op.iLike] : `%Món Hàn%`},
+        { [Sequelize.Op.iLike] : `%Món Trung%`},
+        { [Sequelize.Op.iLike] : `%Món Âu%`},
+        {[Sequelize.Op.iLike] : `%Món Nhật%`},
+        { [Sequelize.Op.iLike] : `%Đồ uống%`},
+        { [Sequelize.Op.iLike] : `%Tráng miệng%`}
       ]
     }
-    whereClauses = {
+    whereClauses.categories = {
       [Sequelize.Op.or]: categories
     }
     whereClauses.cookingTime = {
@@ -717,13 +716,13 @@ exports.searchPosts = (query) => {
       ]
     }
 
-    if (query.search !== ''){
-      options.where = {
-        title : {	
-          [Sequelize.Op.iLike] : `%${query.search}%`
-        }
-      }
-    }
+    // if (query.search !== ''){
+    //   options.where = {
+    //     title : {	
+    //       [Sequelize.Op.iLike] : `%${query.search}%`
+    //     }
+    //   }
+    // }
     if (query.level === ''){
       options.where={ 
         [Sequelize.Op.or] : [
@@ -770,49 +769,50 @@ exports.searchPosts = (query) => {
         }
       }
     }
-    options.where = {
-      cookingTime: {
+    options.where.cookingTime = {
         [Sequelize.Op.between]:[query.mintime,query.maxtime]
-      }
     }
     let categories = [];
     if (query.category.includes('vietfood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Việt%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Việt%`})
     }
     if (query.category.includes('thaifood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Thái%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Thái%`})
     }
     if (query.category.includes('koreafood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Hàn%`})
     }
     if (query.category.includes('chinafood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Trung%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
     }
     if (query.category.includes('eurofood')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Món Âu%`}})
+      categories.push({[Sequelize.Op.iLike] : `%Món Âu%`})
     }
     if (query.category.includes('drink')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}})
+      categories.push({ [Sequelize.Op.iLike] : `%Đồ uống%`})
     }
     if (query.category.includes('dessert')){
-      categories.push({categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}})
+      categories.push({[Sequelize.Op.iLike] : `%Tráng miệng%`})
     }
     if (query.category===''){
       categories=[
-        {categories: { [Sequelize.Op.iLike] : `%Món Việt%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Thái%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Hàn%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Trung%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Âu%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Món Nhật%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Đồ uống%`}},
-        {categories: { [Sequelize.Op.iLike] : `%Tráng miệng%`}}
+        { [Sequelize.Op.iLike] : `%Món Việt%`},
+        { [Sequelize.Op.iLike] : `%Món Thái%`},
+        { [Sequelize.Op.iLike] : `%Món Hàn%`},
+        { [Sequelize.Op.iLike] : `%Món Trung%`},
+        { [Sequelize.Op.iLike] : `%Món Âu%`},
+        { [Sequelize.Op.iLike] : `%Món Nhật%`},
+        { [Sequelize.Op.iLike] : `%Đồ uống%`},
+        { [Sequelize.Op.iLike] : `%Tráng miệng%`}
       ]
     }
-    options.where = {
+    options.where.categories = {
       [Sequelize.Op.or]: categories
     }
-
+    console.log("--------------req=========",query)
+    options.where.title = {
+        [Sequelize.Op.iLike] : `%${query.search}%`
+    }
     if (query.sort !== ''){
       if (query.sort == 'latest'){
         options.order = [
