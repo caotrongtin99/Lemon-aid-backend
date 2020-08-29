@@ -477,6 +477,7 @@ exports.searchPostsWithoutPagination = (query) => {
       ]
     }
 
+
     if (query.level === ''){
       options.where={ 
         [Sequelize.Op.or] : [
@@ -539,6 +540,9 @@ exports.searchPostsWithoutPagination = (query) => {
     if (query.category.includes('chinafood')){
       categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
     }
+    if (query.category.includes('japanfood')){
+      categories.push({ [Sequelize.Op.iLike] : `%Món Nhật%`})
+    }
     if (query.category.includes('eurofood')){
       categories.push({[Sequelize.Op.iLike] : `%Món Âu%`})
     }
@@ -558,12 +562,13 @@ exports.searchPostsWithoutPagination = (query) => {
         { [Sequelize.Op.iLike] : `%Món Nhật%`},
         { [Sequelize.Op.iLike] : `%Đồ uống%`},
         { [Sequelize.Op.iLike] : `%Tráng miệng%`},
-        { [Sequelize.Op.iLike] : `%%`}
+        { [Sequelize.Op.iLike] : `%%`},
       ]
     }
     options.where.categories = {
       [Sequelize.Op.or]: categories
     }
+    // console.log("--------------req=========",query)
     options.where.title = {
         [Sequelize.Op.iLike] : `%${query.search}%`
     }
@@ -811,6 +816,9 @@ exports.searchPosts = (query) => {
     }
     if (query.category.includes('chinafood')){
       categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
+    }
+    if (query.category.includes('japanfood')){
+      categories.push({ [Sequelize.Op.iLike] : `%Món Nhật%`})
     }
     if (query.category.includes('eurofood')){
       categories.push({[Sequelize.Op.iLike] : `%Món Âu%`})
