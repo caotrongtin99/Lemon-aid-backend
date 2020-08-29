@@ -756,59 +756,52 @@ exports.searchPosts = (query) => {
       ]
     }
 
-    // if (query.search !== ''){
-    //   options.where = {
-    //     title : {	
-    //       [Sequelize.Op.iLike] : `%${query.search}%`
-    //     }
-    //   }
-    // }
-    // if (query.level === ''){
-    //   options.where={ 
-    //     [Sequelize.Op.or] : [
-    //     {difficultLevel : 1},
-    //     {difficultLevel : 2},
-    //     {difficultLevel : 3},
-    //   ]}
-    // }
-    // if (query.level !== ''){
-    //   if (query.level.length===3){
-    //     options.where={ 
-    //       [Sequelize.Op.or] : [
-    //       {difficultLevel : 1},
-    //       {difficultLevel : 2},
-    //     ]}
-    //   }
-    //   else if (query.level.length === 2){
-    //     if (query.level.includes('easy') && query.level.includes('normal')){
-    //       options.where={ 
-    //         [Sequelize.Op.or] : [
-    //         {difficultLevel : 1},
-    //         {difficultLevel : 2},
-    //       ]}
-    //     } else if (query.level.includes('easy') && query.level.includes('hard')){
-    //       options.where={ 
-    //         [Sequelize.Op.or] : [
-    //         {difficultLevel : 1},
-    //         {difficultLevel : 3},
-    //       ]}
-    //     } else if (query.level.includes('normal') && query.level.includes('hard')){
-    //       options.where={ 
-    //         [Sequelize.Op.or] : [
-    //         {difficultLevel : 2},
-    //         {difficultLevel : 3},
-    //       ]}
-    //     }
-    //   } else {
-    //     if (query.level === "easy"){
-    //       options.where.difficultLevel = 1;
-    //     } else if (query.level === "normal"){
-    //       options.where.difficultLevel = 2;
-    //     } else if (query.level === "hard"){
-    //       options.where.difficultLevel = 3;
-    //     }
-    //   }
-    // }
+    if (query.level === ''){
+      options.where={ 
+        [Sequelize.Op.or] : [
+        {difficultLevel : 1},
+        {difficultLevel : 2},
+        {difficultLevel : 3},
+      ]}
+    }
+    if (query.level !== ''){
+      if (query.level.length===3){
+        options.where={ 
+          [Sequelize.Op.or] : [
+          {difficultLevel : 1},
+          {difficultLevel : 2},
+        ]}
+      }
+      else if (query.level.length === 2){
+        if (query.level.includes('easy') && query.level.includes('normal')){
+          options.where={ 
+            [Sequelize.Op.or] : [
+            {difficultLevel : 1},
+            {difficultLevel : 2},
+          ]}
+        } else if (query.level.includes('easy') && query.level.includes('hard')){
+          options.where={ 
+            [Sequelize.Op.or] : [
+            {difficultLevel : 1},
+            {difficultLevel : 3},
+          ]}
+        } else if (query.level.includes('normal') && query.level.includes('hard')){
+          options.where={ 
+            [Sequelize.Op.or] : [
+            {difficultLevel : 2},
+            {difficultLevel : 3},
+          ]}
+        }
+      } else {
+        if (query.level === "easy"){
+          options.where.difficultLevel = 1;
+        } else if (query.level === "normal"){
+          options.where.difficultLevel = 2;
+        } else if (query.level === "hard"){
+          options.where.difficultLevel = 3;
+        }
+      }
+    }
     // options.where.cookingTime = {
     //     [Sequelize.Op.between]:[query.mintime,query.maxtime]
     // }
