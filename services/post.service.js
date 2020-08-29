@@ -477,13 +477,6 @@ exports.searchPostsWithoutPagination = (query) => {
       ]
     }
 
-    if (query.search !== ''){
-      options.where = {
-        title : {	
-          [Sequelize.Op.iLike] : `%${query.search}%`
-        }
-      }
-    }
     if (query.level === ''){
       options.where={ 
         [Sequelize.Op.or] : [
@@ -564,7 +557,8 @@ exports.searchPostsWithoutPagination = (query) => {
         { [Sequelize.Op.iLike] : `%Món Âu%`},
         { [Sequelize.Op.iLike] : `%Món Nhật%`},
         { [Sequelize.Op.iLike] : `%Đồ uống%`},
-        { [Sequelize.Op.iLike] : `%Tráng miệng%`}
+        { [Sequelize.Op.iLike] : `%Tráng miệng%`},
+        { [Sequelize.Op.iLike] : `%%`}
       ]
     }
     options.where.categories = {
@@ -802,9 +796,9 @@ exports.searchPosts = (query) => {
         }
       }
     }
-    // options.where.cookingTime = {
-    //     [Sequelize.Op.between]:[query.mintime,query.maxtime]
-    // }
+    options.where.cookingTime = {
+        [Sequelize.Op.between]:[query.mintime,query.maxtime]
+    }
     let categories = [];
     if (query.category.includes('vietfood')){
       categories.push({ [Sequelize.Op.iLike] : `%Món Việt%`})
@@ -836,7 +830,8 @@ exports.searchPosts = (query) => {
         { [Sequelize.Op.iLike] : `%Món Âu%`},
         { [Sequelize.Op.iLike] : `%Món Nhật%`},
         { [Sequelize.Op.iLike] : `%Đồ uống%`},
-        { [Sequelize.Op.iLike] : `%Tráng miệng%`}
+        { [Sequelize.Op.iLike] : `%Tráng miệng%`},
+        { [Sequelize.Op.iLike] : `%%`},
       ]
     }
     options.where.categories = {
