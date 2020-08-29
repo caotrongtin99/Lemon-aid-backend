@@ -418,123 +418,124 @@ exports.searchPostsWithoutPagination = (query) => {
     let options = {
       where : {
 
-      },
-      include: [
-        {
-          attributes:['id'],
-          model : models.PostLike,
-          as : 'postlike',
-          include : [
-            {
-              attributes:['id','username','avatar'],
-              model: models.User,
-              as : 'postlike'
-            }
-          ]
-        },
-        {
-          attributes:['id','username','avatar'],
-          model: models.User
-        }
-      ]
+      }
     }
+    //   include: [
+    //     {
+    //       attributes:['id'],
+    //       model : models.PostLike,
+    //       as : 'postlike',
+    //       include : [
+    //         {
+    //           attributes:['id','username','avatar'],
+    //           model: models.User,
+    //           as : 'postlike'
+    //         }
+    //       ]
+    //     },
+    //     {
+    //       attributes:['id','username','avatar'],
+    //       model: models.User
+    //     }
+    //   ]
+    // }
 
-    if (query.search !== ''){
-      options.where = {
-        title : {	
-          [Sequelize.Op.iLike] : `%${query.search}%`
-        }
-      }
-    }
-    if (query.level === ''){
-      options.where={ 
-        [Sequelize.Op.or] : [
-        {difficultLevel : 1},
-        {difficultLevel : 2},
-        {difficultLevel : 3},
-      ]}
-    }
-    if (query.level !== ''){
-      if (query.level.length===3){
-        options.where={ 
-          [Sequelize.Op.or] : [
-          {difficultLevel : 1},
-          {difficultLevel : 2},
-        ]}
-      }
-      else if (query.level.length === 2){
-        if (query.level.includes('easy') && query.level.includes('normal')){
-          options.where={ 
-            [Sequelize.Op.or] : [
-            {difficultLevel : 1},
-            {difficultLevel : 2},
-          ]}
-        } else if (query.level.includes('easy') && query.level.includes('hard')){
-          options.where={ 
-            [Sequelize.Op.or] : [
-            {difficultLevel : 1},
-            {difficultLevel : 3},
-          ]}
-        } else if (query.level.includes('normal') && query.level.includes('hard')){
-          options.where={ 
-            [Sequelize.Op.or] : [
-            {difficultLevel : 2},
-            {difficultLevel : 3},
-          ]}
-        }
-      } else {
-        if (query.level === "easy"){
-          options.where.difficultLevel = 1;
-        } else if (query.level === "normal"){
-          options.where.difficultLevel = 2;
-        } else if (query.level === "hard"){
-          options.where.difficultLevel = 3;
-        }
-      }
-    }
-    options.where.cookingTime = {
-        [Sequelize.Op.between]:[query.mintime,query.maxtime]
-    }
-    let categories = [];
-    if (query.category.includes('vietfood')){
-      categories.push({ [Sequelize.Op.iLike] : `%Món Việt%`})
-    }
-    if (query.category.includes('thaifood')){
-      categories.push({ [Sequelize.Op.iLike] : `%Món Thái%`})
-    }
-    if (query.category.includes('koreafood')){
-      categories.push({ [Sequelize.Op.iLike] : `%Món Hàn%`})
-    }
-    if (query.category.includes('chinafood')){
-      categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
-    }
-    if (query.category.includes('eurofood')){
-      categories.push({[Sequelize.Op.iLike] : `%Món Âu%`})
-    }
-    if (query.category.includes('drink')){
-      categories.push({ [Sequelize.Op.iLike] : `%Đồ uống%`})
-    }
-    if (query.category.includes('dessert')){
-      categories.push({[Sequelize.Op.iLike] : `%Tráng miệng%`})
-    }
-    if (query.category===''){
-      categories=[
-        { [Sequelize.Op.iLike] : `%Món Việt%`},
-        { [Sequelize.Op.iLike] : `%Món Thái%`},
-        { [Sequelize.Op.iLike] : `%Món Hàn%`},
-        { [Sequelize.Op.iLike] : `%Món Trung%`},
-        { [Sequelize.Op.iLike] : `%Món Âu%`},
-        { [Sequelize.Op.iLike] : `%Món Nhật%`},
-        { [Sequelize.Op.iLike] : `%Đồ uống%`},
-        { [Sequelize.Op.iLike] : `%Tráng miệng%`}
-      ]
-    }
-    options.where.categories = {
-      [Sequelize.Op.or]: categories
-    }
-    options.where.title = {
-        [Sequelize.Op.iLike] : `%${query.search}%`
-    }
+    // if (query.search !== ''){
+    //   options.where = {
+    //     title : {	
+    //       [Sequelize.Op.iLike] : `%${query.search}%`
+    //     }
+    //   }
+    // }
+    // if (query.level === ''){
+    //   options.where={ 
+    //     [Sequelize.Op.or] : [
+    //     {difficultLevel : 1},
+    //     {difficultLevel : 2},
+    //     {difficultLevel : 3},
+    //   ]}
+    // }
+    // if (query.level !== ''){
+    //   if (query.level.length===3){
+    //     options.where={ 
+    //       [Sequelize.Op.or] : [
+    //       {difficultLevel : 1},
+    //       {difficultLevel : 2},
+    //     ]}
+    //   }
+    //   else if (query.level.length === 2){
+    //     if (query.level.includes('easy') && query.level.includes('normal')){
+    //       options.where={ 
+    //         [Sequelize.Op.or] : [
+    //         {difficultLevel : 1},
+    //         {difficultLevel : 2},
+    //       ]}
+    //     } else if (query.level.includes('easy') && query.level.includes('hard')){
+    //       options.where={ 
+    //         [Sequelize.Op.or] : [
+    //         {difficultLevel : 1},
+    //         {difficultLevel : 3},
+    //       ]}
+    //     } else if (query.level.includes('normal') && query.level.includes('hard')){
+    //       options.where={ 
+    //         [Sequelize.Op.or] : [
+    //         {difficultLevel : 2},
+    //         {difficultLevel : 3},
+    //       ]}
+    //     }
+    //   } else {
+    //     if (query.level === "easy"){
+    //       options.where.difficultLevel = 1;
+    //     } else if (query.level === "normal"){
+    //       options.where.difficultLevel = 2;
+    //     } else if (query.level === "hard"){
+    //       options.where.difficultLevel = 3;
+    //     }
+    //   }
+    // }
+    // options.where.cookingTime = {
+    //     [Sequelize.Op.between]:[query.mintime,query.maxtime]
+    // }
+    // let categories = [];
+    // if (query.category.includes('vietfood')){
+    //   categories.push({ [Sequelize.Op.iLike] : `%Món Việt%`})
+    // }
+    // if (query.category.includes('thaifood')){
+    //   categories.push({ [Sequelize.Op.iLike] : `%Món Thái%`})
+    // }
+    // if (query.category.includes('koreafood')){
+    //   categories.push({ [Sequelize.Op.iLike] : `%Món Hàn%`})
+    // }
+    // if (query.category.includes('chinafood')){
+    //   categories.push({ [Sequelize.Op.iLike] : `%Món Trung%`})
+    // }
+    // if (query.category.includes('eurofood')){
+    //   categories.push({[Sequelize.Op.iLike] : `%Món Âu%`})
+    // }
+    // if (query.category.includes('drink')){
+    //   categories.push({ [Sequelize.Op.iLike] : `%Đồ uống%`})
+    // }
+    // if (query.category.includes('dessert')){
+    //   categories.push({[Sequelize.Op.iLike] : `%Tráng miệng%`})
+    // }
+    // if (query.category===''){
+    //   categories=[
+    //     { [Sequelize.Op.iLike] : `%Món Việt%`},
+    //     { [Sequelize.Op.iLike] : `%Món Thái%`},
+    //     { [Sequelize.Op.iLike] : `%Món Hàn%`},
+    //     { [Sequelize.Op.iLike] : `%Món Trung%`},
+    //     { [Sequelize.Op.iLike] : `%Món Âu%`},
+    //     { [Sequelize.Op.iLike] : `%Món Nhật%`},
+    //     { [Sequelize.Op.iLike] : `%Đồ uống%`},
+    //     { [Sequelize.Op.iLike] : `%Tráng miệng%`}
+    //   ]
+    // }
+    // options.where.categories = {
+    //   [Sequelize.Op.or]: categories
+    // }
+    // options.where.title = {
+    //     [Sequelize.Op.iLike] : `%${query.search}%`
+    // }
     if (query.sort !== ''){
       if (query.sort == 'latest'){
         options.order = [
@@ -548,8 +549,8 @@ exports.searchPostsWithoutPagination = (query) => {
       .findAll(options)
       .then(data=>{
         const formatData = data.map(element=>{
-          element.dataValues.numberOfLikes = element.dataValues.postlike.length;
-          delete element.dataValues.postlike;
+          //element.dataValues.numberOfLikes = element.dataValues.postlike.length;
+          //delete element.dataValues.postlike;
           return element.dataValues;
         })
         resolve(formatData)
