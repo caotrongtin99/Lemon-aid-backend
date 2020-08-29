@@ -11,7 +11,8 @@ const {
   userSignupValidator,
   userSigninValidator
 } = require("../validators/auth.validator");
-
+const {comparePassword} = require("../services/user.service");
+const requireLogin = require('../middlewares/requireLogin');
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -60,19 +61,38 @@ router.post("/reset-password",(req,res)=>{
   })
 })
 
-router.post('/new-password',(req,res)=>{
-  const newPassword = req.body.password
+router.post('/new-password',requireLogin,(req,res)=>{
+  const newPassword = req.body.newPassword
+  const oldPassword = req.body.oldPassword
+  const confirmPassword = req.body.confirmPassword
+  const userId = req.body.userId
   const sentToken = req.body.token
-  User.findOne({resetToken:sentToken,expireToken:{$gt:Date.now()}})
+  console.log("every thing", newPassword, oldPassword, confirmPassword, userId)
+  if (newPassword!==confirmPassword){
+    return res.json(400).json({
+      message: "Confirm password does not match!!!"
+    })
+  }
+
+  User.findOne({id:userId})
   .then(user=>{
       if(!user){
           return res.status(422).json({error:"Try again session expired"})
+      }
+      if(!comparePassword(oldPassword,user.password)){
+        return res.status(400).json({
+          err : "Old Password is wrong!!!"
+        })
       }
       bcrypt.hash(newPassword,12).then(hashedpassword=>{
          user.password = hashedpassword
          user.resetToken = undefined
          user.expireToken = undefined
-         user.save().then((saveduser)=>{
+         console.log("=============User================",user)
+         User.update({password : hashedpassword}, {
+           where : {id : userId}
+         }).then((saveduser)=>{
+
              res.json({message:"password updated success"})
          })
       })

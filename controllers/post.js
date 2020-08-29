@@ -216,10 +216,9 @@ exports.updatePost = async (req, res) => {
   let postData = {
     ...req.body
   }
-
   if (postData.avatar){
     const response = await upload(postData.avatar);
-    postData.avatar = response.data.link;
+    postData.avatar = response.secure_url;
   }
   if (postData.steps){
     const newSteps = await Promise.all(postData.steps.map(async (step) => {
@@ -232,11 +231,10 @@ exports.updatePost = async (req, res) => {
     postData.content = JSON.stringify(newSteps);
     delete postData.steps;
   }
-
-  console.log("Post data",postData)
   
   updatePost(postData,postid)
     .then(response=>{
+      console.log("===========result============",response)
       res.status(200).json({
         message:"Update successfully"
       })
