@@ -727,7 +727,7 @@ exports.searchPosts = (query) => {
     })
     .catch(err => reject(new Error(err)))
     })
-  }
+  }else{
   return new Promise((resolve,reject)=>{
     console.log("====================latest")
     let options = {
@@ -850,16 +850,16 @@ exports.searchPosts = (query) => {
     //   [Sequelize.Op.or]: categories
     // }
     // console.log("--------------req=========",query)
-    // options.where.title = {
-    //     [Sequelize.Op.iLike] : `%${query.search}%`
-    // }
-    // if (query.sort !== ''){
-    //   if (query.sort == 'latest'){
-    //     options.order = [
-    //       ['createdAt','desc']
-    //     ]
-    //   }
-    // }
+    options.where.title = {
+        [Sequelize.Op.iLike] : `%${query.search}%`
+    }
+    if (query.sort !== ''){
+      if (query.sort == 'latest'){
+        options.order = [
+          ['createdAt','desc']
+        ]
+      }
+    }
 
     models.Post
       .findAll(options)
@@ -873,6 +873,7 @@ exports.searchPosts = (query) => {
       })
       .catch(err => reject(new Error(err)))
   })
+  }
 }
 
 exports.countLikesOfPost = (postId) =>{
