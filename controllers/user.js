@@ -10,8 +10,10 @@ const {
   deleteComment,
   getActivityHistory,
   updateUserInfo,
+  getTopUsers,
+  
 } = require("../services/user.service");
-const { getPostsByUserId } = require("../services/post.service");
+const { getPostsByUserId, getPostsByUserIdWithoutPagination } = require("../services/post.service");
 const { Result } = require("express-validator");
 const upload = require("../services/image.service");
 const {
@@ -210,3 +212,29 @@ exports.getNotifications = (req, res) => {
       console.log(err);
     });
 };
+
+exports.getTopUser = async (req, res) => {
+  getTopUsers()
+    .then(async(data)=>{
+      users = await Promise.all(data.map(async (user)=>{   
+        console.log("==============userid =======",user.dataValues.followerId)
+        const postsOfUser = await getPostsByUserIdWithoutPagination(user.dataValues.followerId);
+        console.log("=============posts of user====",postsOfUser)
+        user.dataValues.numberOfPosts = postsOfUser.length;
+        user.dataValues.user = user.dataValues.follower;
+        user.dataValues.userId = user.dataValues.followerId;
+        user.dataValues.numberOfFollowers = user.dataValues.count;
+        delete user.dataValues.follower,
+        delete user.dataValues.followerId;
+        delete user.dataValues.count;
+        return user;
+      }))
+      console.log("===================user============",users)
+      res.status(200).json({
+        data: users
+      })
+    })
+    .catch(err=>{
+      console.log(err)
+    })
+}

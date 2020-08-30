@@ -76,11 +76,9 @@ exports.signup = (req,res) =>{
 }
 
 exports.signin= (req,res) =>{
-  console.log("===============Vao route================")
   const {username,password} = req.body;
   getUserByUsername(username)
     .then(user=>{
-      console.log("==============USER=======",user)
       if (!user) {
         return res.status(400).json({
           err : "Account does not exist!!!"

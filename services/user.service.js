@@ -5,6 +5,7 @@ let PostLike = models.PostLike;
 const saltRounds = 10;
 let bcrypt = require('bcryptjs');
 const { Op } = require("sequelize");
+const Sequelize = require('sequelize')
 
 
 exports.getUserByEmail = (email)=>{
@@ -167,5 +168,30 @@ exports.getActivityHistory = (userId) => {
         as : 'follower',
       }
     ]
+  })
+}
+
+exports.getTopUsers = () =>{
+  return new Promise((resolve,reject)=>{
+    models.Follower.findAll({
+      group: ['followerId','follower.id'],
+      attributes: ['followerId',[Sequelize.fn('COUNT','userId'),'count']],
+      order: [[Sequelize.literal('count'),'DESC']],
+      limit: 5,
+      offset: 0,
+      include: [
+        {
+          attributes: ['id','username','avatar'],
+          model: models.User,
+          as: 'follower'
+        }
+      ]
+    })
+    
+  .then(data=>{
+    console.log("=================data=============",data)
+    return resolve(data)
+  })
+  .catch(err => reject(new Error(err)))
   })
 }
