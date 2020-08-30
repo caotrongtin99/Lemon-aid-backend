@@ -74,7 +74,7 @@ router.post('/new-password',requireLogin,(req,res)=>{
     })
   }
 
-  User.findOne({id:userId})
+  User.findOne({where : {id: userId}})
   .then(user=>{
       if(!user){
           return res.status(422).json({error:"Try again session expired"})
