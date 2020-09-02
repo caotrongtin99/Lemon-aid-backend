@@ -40,7 +40,7 @@ router.post("/reset-password",(req,res)=>{
         user.resetToken = token;
         user.expireToken = Date.now() + 3600000;
         console.log("=========user reset token=============", user)
-        User.update(user, {where : {id : user.id} }).then(result=>{
+        User.update({resetToken: token}, {where : {id : user.id} }).then(result=>{
           var mailOptions = {
             from: 'tin.caotrong@gmail.com',
             to: user.email,
@@ -117,7 +117,7 @@ router.post('/create-new-password',(req,res)=>{
          user.resetToken = undefined
          user.expireToken = undefined,
          console.log("==========user after hash=====", user)
-         User.update(user, {
+         User.update({password : hashedpassword}, {
           where : {id : user.id}
           }).then((saveduser)=>{
              res.json({message:"password updated success"})
