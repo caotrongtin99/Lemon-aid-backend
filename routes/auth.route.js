@@ -38,7 +38,7 @@ router.post("/reset-password",(req,res)=>{
         
         user.resetToken = token;
         user.expireToken = Date.now() + 3600000;
-        User.update({user}, {id : user.id }).then(result=>{
+        User.update({user}, {where : {id : user.id} }).then(result=>{
           var mailOptions = {
             from: 'tin.caotrong@gmail.com',
             to: user.email,
