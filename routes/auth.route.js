@@ -113,8 +113,9 @@ router.post('/create-new-password',(req,res)=>{
       bcrypt.hash(newPassword,12).then(hashedpassword=>{
          user.password = hashedpassword
          user.resetToken = undefined
-         user.expireToken = undefined
-         User.update({password : hashedpassword}, {
+         user.expireToken = undefined,
+         console.log("==========user after hash=====", user)
+         User.update(user, {
           where : {id : user.id}
           }).then((saveduser)=>{
              res.json({message:"password updated success"})
