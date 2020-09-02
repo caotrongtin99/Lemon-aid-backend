@@ -38,7 +38,7 @@ router.post("/reset-password",(req,res)=>{
         
         user.resetToken = token;
         user.expireToken = Date.now() + 3600000;
-        User.update({user}, {where : {id : user.id} }).then(result=>{
+        User.update(user, {where : {id : user.id} }).then(result=>{
           var mailOptions = {
             from: 'tin.caotrong@gmail.com',
             to: user.email,
@@ -106,9 +106,9 @@ router.post('/create-new-password',(req,res)=>{
   const sentToken = req.body.token
   User.findOne({where: {resetToken:sentToken,expireToken:{$gt:Date.now()}}})
   .then(user=>{
-      if(!user){
-          return res.status(422).json({error:"Try again session expired"})
-      }
+      // if(!user){
+      //     return res.status(422).json({error:"Try again session expired"})
+      // }
       console.log("User=======",user)
       bcrypt.hash(newPassword,12).then(hashedpassword=>{
          user.password = hashedpassword
