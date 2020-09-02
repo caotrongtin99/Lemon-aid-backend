@@ -14,10 +14,12 @@ const {
 const {comparePassword} = require("../services/user.service");
 const requireLogin = require('../middlewares/requireLogin');
 var transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, 
   auth: {
     user: 'tin.caotrong@gmail.com',
-    pass: 'cttinLK1999@'
+    pass: 'cttinLK1999!'
   }
 });
 
