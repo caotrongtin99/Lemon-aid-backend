@@ -104,7 +104,7 @@ router.post('/new-password',requireLogin,(req,res)=>{
 router.post('/create-new-password',(req,res)=>{
   const newPassword = req.body.password
   const sentToken = req.body.token
-  User.findOne({resetToken:sentToken,expireToken:{$gt:Date.now()}})
+  User.findOne({where: {resetToken:sentToken,expireToken:{$gt:Date.now()}}})
   .then(user=>{
       if(!user){
           return res.status(422).json({error:"Try again session expired"})
