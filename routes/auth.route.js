@@ -30,6 +30,7 @@ router.post("/reset-password",(req,res)=>{
       console.log(err)
     }
     const token = buffer.toString("hex")
+    console.log("===========token-------",token)
     User.findOne({ where : {email: req.body.email}})
       .then(user=>{
         if (!user){
@@ -38,6 +39,7 @@ router.post("/reset-password",(req,res)=>{
         
         user.resetToken = token;
         user.expireToken = Date.now() + 3600000;
+        console.log("=========user reset token=============", user)
         User.update(user, {where : {id : user.id} }).then(result=>{
           var mailOptions = {
             from: 'tin.caotrong@gmail.com',
