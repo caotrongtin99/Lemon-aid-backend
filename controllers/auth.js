@@ -92,7 +92,7 @@ exports.signin= (req,res) =>{
         }
         console.log(user)
         const token = jwt.sign({ id: user.id },"Skasdkajs6dkajsd6kjaksd6jkasd", {
-          expiresIn: "1d"
+          expiresIn: "10d"
         });
         res.cookie("token", token, { expiresIn: "1d" });
         const { id, username, name, email, avatar } = user;
